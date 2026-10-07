@@ -1,0 +1,57 @@
+---
+// Legal pages: /sq/privatesia/, /sq/kushtet/, /en/privacy/, /en/terms/
+import Base from '../../layouts/Base.astro';
+import { legal, type LegalDoc } from '../../data/legal';
+import { content, contact, type Lang } from '../../data/content';
+
+export function getStaticPaths() {
+  const out: { params: { lang: Lang; doc: string } }[] = [];
+  for (const lang of ['sq', 'en'] as Lang[]) {
+    out.push({ params: { lang, doc: legal[lang].privacy.slug } }, { params: { lang, doc: legal[lang].terms.slug } });
+  }
+  return out;
+}
+const lang = Astro.params.lang as Lang;
+const L = legal[lang];
+const doc: LegalDoc = Astro.params.doc === L.privacy.slug ? L.privacy : L.terms;
+const otherLang: Lang = lang === 'sq' ? 'en' : 'sq';
+const t = content[lang];
+const year = new Date().getFullYear();
+// paragraphs carry {email} {phone} {address}; each becomes a span the edge keeps in sync with the admin panel
+const parts = (p: string) => p.split(/(\{email\}|\{phone\}|\{address\})/g);
+---
+<Base lang={lang} title={`${doc.title} | EV COMPANY sh.p.k.`} path={`/${lang}/${doc.slug}/`} altPath={`/${otherLang}/${doc.other}/`}>
+  <header class="site-header is-solid legal-header">
+    <a class="site-header__brand" href={`/${lang}/`} aria-label="EV COMPANY sh.p.k."><img src="/ev-company-mark.svg" alt="" width="96" height="74" /></a>
+    <a class="text-link legal-header__back" href={`/${lang}/`}>{L.labels.back}</a>
+    <div class="lang">
+      <a href={`/sq/${lang === 'sq' ? doc.slug : doc.other}/`} aria-current={lang === 'sq' ? 'page' : undefined} lang="sq">SQ</a>
+      <a href={`/en/${lang === 'en' ? doc.slug : doc.other}/`} aria-current={lang === 'en' ? 'page' : undefined} lang="en">EN</a>
+    </div>
+  </header>
+  <main id="main" class="legal wrap">
+    <h1 class="legal__title">{doc.title}</h1>
+    <p class="legal__updated">{doc.updated}</p>
+    <p class="legal__intro">{doc.intro}</p>
+    {doc.sections.map((s) => (
+      <section class="legal__section">
+        <h2>{s.h}</h2>
+        {s.p.map((p) => <p>{parts(p).map((x) =>
+          x === '{email}' ? <span data-c-email>{contact.email}</span>
+          : x === '{phone}' ? <span data-c-phone>{contact.phoneDisplay}</span>
+          : x === '{address}' ? <span data-c-address>{contact.street}, {contact.city}</span>
+          : x)}</p>)}
+      </section>
+    ))}
+  </main>
+  <footer class="footer footer--legal">
+    <div class="wrap footer__base">
+      <span>© {year} EV COMPANY sh.p.k. {t.footer.rights}</span>
+      <nav class="legal-links" aria-label={L.labels.privacy}>
+        <a href={`/${lang}/${L.privacy.slug}/`}>{L.labels.privacy}</a>
+        <a href={`/${lang}/${L.terms.slug}/`}>{L.labels.terms}</a>
+      </nav>
+      <a href={contact.phoneHref} data-c-phone>{contact.phoneDisplay}</a>
+    </div>
+  </footer>
+</Base>

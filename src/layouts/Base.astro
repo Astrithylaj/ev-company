@@ -1,0 +1,57 @@
+---
+import '@fontsource-variable/archivo/wdth.css';
+import '../styles/global.css';
+import type { Lang } from '../data/content';
+import { content } from '../data/content';
+
+interface Props { lang: Lang; title?: string; path?: string; altPath?: string; intro?: boolean; notFound?: boolean }
+const { lang, title, path, altPath, intro = false, notFound = false } = Astro.props;
+const t = content[lang];
+const other: Lang = lang === 'sq' ? 'en' : 'sq';
+const here = path ?? `/${lang}/`;
+const there = altPath ?? `/${other}/`;
+// Before launch (no `site` set) the page stays out of Google and links are relative.
+const live = !!Astro.site && !notFound;
+const abs = (path: string) => (Astro.site ? new URL(path, Astro.site).href : path);
+---
+<!doctype html>
+<html lang={t.htmlLang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title ?? t.meta.title}</title>
+    <meta name="description" content={t.meta.description} />
+    {!live && <meta name="robots" content="noindex, nofollow" />}
+    {live && <link rel="canonical" href={abs(here)} />}
+    <meta name="theme-color" content="#000000" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    {!notFound && <link rel="alternate" hreflang={lang} href={abs(here)} />}
+    {!notFound && <link rel="alternate" hreflang={other} href={abs(there)} />}
+    {!notFound && <link rel="alternate" hreflang="x-default" href={abs(lang === 'sq' ? here : there)} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={t.meta.title} />
+    <meta property="og:description" content={t.meta.description} />
+    <meta property="og:locale" content={lang === 'sq' ? 'sq_AL' : 'en_GB'} />
+    <meta property="og:site_name" content="EV COMPANY sh.p.k." />
+    <meta property="og:image" content={abs('/og.jpg')} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={t.hero.title.join(' ')} />
+    {live && <meta property="og:url" content={abs(here)} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <script is:inline define:vars={{ introPage: intro }}>
+      (function (d) {
+        d.classList.add('js');
+        try {
+          var force = location.search.indexOf('intro') > -1;
+          if (introPage && (force || (!matchMedia('(prefers-reduced-motion: reduce)').matches && !sessionStorage.getItem('ev-intro')))) d.classList.add('intro');
+        } catch (e) {}
+      })(document.documentElement);
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main">{t.skip}</a>
+    <slot />
+  </body>
+</html>

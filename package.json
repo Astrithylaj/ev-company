@@ -1,0 +1,27 @@
+{
+  "name": "ev-company-website-v2",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "map": "node scripts/kosovo.mjs",
+    "cf:dev": "astro build && wrangler pages dev --port 8788 --binding DEV_ADMIN_BYPASS=1",
+    "cf:deploy": "astro build && wrangler pages deploy"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "@fontsource-variable/archivo": "^5.3.0",
+    "astro": "^7.3.6",
+    "three": "^0.186.1"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261007.1",
+    "d3-geo": "^3.1.1",
+    "topojson-client": "^3.1.0",
+    "world-atlas": "^2.0.2",
+    "wrangler": "^4.148.0"
+  }
+}

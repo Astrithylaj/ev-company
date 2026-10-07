@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.astro/
+
+# Cloudflare local dev data
+.wrangler/
+.dev.vars

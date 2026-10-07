@@ -1,0 +1,55 @@
+---
+// Services as a distribution board: a main switch plus one breaker per service.
+// Minimal styling, real-panel shapes: narrow modules, lever in a slot, I/O marks, indicator light, label strip.
+import type { Service } from '../data/content';
+interface Props { services: Service[]; all: Service; label: string; hint: string; forLabel: string; ask: string; cityLabel: string }
+const { services, all, label, hint, forLabel, ask, cityLabel } = Astro.props;
+const items = [all, ...services];
+const initial = all.id; // the whole town lit, every service listed
+---
+<div class:list={['board', { 'is-all': initial === 'all' }]} data-board>
+  <div class="city" role="img" aria-label={cityLabel} data-city></div>
+
+  <div class="panel" data-tilt>
+    <div class="panel__rail" role="tablist" aria-label={label}>
+      {items.map((s, i) => (
+        <button
+          class:list={['breaker', { 'breaker--main': s.id === 'all' }]}
+          type="button"
+          role="tab"
+          id={`tab-${s.id}`}
+          aria-controls={`svc-${s.id}`}
+          aria-selected={s.id === initial ? 'true' : 'false'}
+          tabindex={s.id === initial ? 0 : -1}
+          style={`--n:${i}`}
+          data-breaker
+        >
+          <span class="breaker__label">{s.short}</span>
+          <span class="breaker__body" aria-hidden="true">
+            <span class="breaker__led"></span>
+            <span class="breaker__mark breaker__mark--on">I</span>
+            <span class="breaker__slot"><span class="breaker__lever"></span></span>
+            <span class="breaker__mark breaker__mark--off">O</span>
+          </span>
+        </button>
+      ))}
+    </div>
+    <p class="panel__hint">{hint}</p>
+  </div>
+
+  <div class="readout" aria-live="polite">
+    {items.map((s) => (
+      <div class="readout__item" role="tabpanel" id={`svc-${s.id}`} aria-labelledby={`tab-${s.id}`} hidden={s.id !== initial} tabindex="0">
+        <h3 class="readout__title">{s.title}</h3>
+        <p class="readout__text">{s.text}</p>
+        {s.id === 'all' && (
+          <ul class="readout__list">
+            {services.map((x) => <li><button type="button" data-pick={x.id}>{x.title}</button></li>)}
+          </ul>
+        )}
+        {s.for && <p class="readout__for"><span>{forLabel}:</span> {s.for}</p>}
+        <a class="readout__ask" href="#kontakti" data-ask={s.id}>{ask}</a>
+      </div>
+    ))}
+  </div>
+</div>
