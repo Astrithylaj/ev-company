@@ -25,7 +25,7 @@ export async function saveContent(env: Env, next: SiteContent): Promise<void> {
   // photos only the dropped older version still used can go; the current and previous versions keep theirs
   const keep = new Set([...photos(cur), ...photos(next)]);
   const gone = [...photos(prev)].filter((f) => !keep.has(f)).map((f) => f.replace(/^\/media\//, ''));
-  if (gone.length) await env.EV_MEDIA.delete(gone);
+  if (gone.length && env.EV_MEDIA) await env.EV_MEDIA.delete(gone);
 }
 
 export async function undoContent(env: Env): Promise<SiteContent | null> {

@@ -11,6 +11,7 @@ function kind(b: Uint8Array): { ext: string; type: string } | null {
 }
 
 export const onRequestPost = async (ctx: Ctx) => {
+  if (!ctx.env.EV_MEDIA) return json({ error: 'Ngarkimi i fotove nuk është aktivizuar ende.' }, 503);
   let form: FormData;
   try { form = await ctx.request.formData(); } catch { return json({ error: 'Foto nuk u ngarkua.' }, 400); }
   const file = form.get('file');

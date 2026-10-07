@@ -5,11 +5,12 @@ compatibility_date = "2026-09-01"
 
 [[kv_namespaces]]
 binding = "EV_CONTENT"
-id = "REPLACE_WITH_KV_NAMESPACE_ID"
+id = "73126c9555b04f56b58f432d5337bba9"
 
-[[r2_buckets]]
-binding = "EV_MEDIA"
-bucket_name = "ev-company-media"
+# Photos (R2). Switched on once the bucket "ev-company-media" exists; until then photo upload says it is not active yet.
+# [[r2_buckets]]
+# binding = "EV_MEDIA"
+# bucket_name = "ev-company-media"
 
 [vars]
 # ACCESS_TEAM_DOMAIN, ACCESS_AUD and ADMIN_EMAILS are set in the Cloudflare dashboard (Settings → Variables).

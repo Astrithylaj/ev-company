@@ -1,6 +1,6 @@
 export interface Env {
   EV_CONTENT: KVNamespace;            // editable content (JSON)
-  EV_MEDIA: R2Bucket;                 // project photos
+  EV_MEDIA?: R2Bucket;                 // project photos
   ACCESS_TEAM_DOMAIN: string;         // e.g. "evcompany.cloudflareaccess.com"
   ACCESS_AUD: string;                 // the Access application's audience tag
   ADMIN_EMAILS: string;               // comma-separated list of people allowed in

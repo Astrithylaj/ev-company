@@ -4,6 +4,7 @@ import type { Ctx } from '../../server/env';
 export const onRequestGet = async (ctx: Ctx) => {
   const key = new URL(ctx.request.url).pathname.replace(/^\/media\//, '');
   if (!/^projects\/[a-z0-9-]{8,64}\.(jpg|jpeg|png|webp)$/i.test(key)) return new Response('Not found', { status: 404 });
+  if (!ctx.env.EV_MEDIA) return new Response('Not found', { status: 404 });
   const obj = await ctx.env.EV_MEDIA.get(key);
   if (!obj) return new Response('Not found', { status: 404 });
   const headers = new Headers();
