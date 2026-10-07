@@ -44,7 +44,8 @@ The page is a street at night. Black is the default and the logo's orange→yell
   Regenerate the data with `npm run map`.
 - **Contact** ("Le ta ndezim."): the section "switches on" to the logo gradient. Big click-to-call number, email, address, hours,
   and a quote form (name, phone required, town, private/business/institution, service, message). Until a form service
-  is connected it opens the visitor's email app; set `data-endpoint` on the form to send directly.
+  is connected it opens the visitor's email app (and says what to do if none opens). With a Web3Forms key in
+  `src/data/form.ts` it sends directly: phone number checked, spam trap, 15 s timeout, clear error with the live phone number.
 - **Phones**: a call / quote bar sticks to the bottom of the screen once you scroll past the hero
   (plus a green WhatsApp button when a WhatsApp number is set in the admin).
 - **Notice**: optional short message above the hero title, set from the admin.
@@ -83,8 +84,8 @@ Projects can still be added in code (`src/data/projects.ts`) as the starting con
 - [ ] Legal pages: company NUI filled in `src/data/legal.ts`; Ermal confirms the details (24-month retention, form service).
 - [ ] Domain confirmed: set `SITE` in `astro.config.mjs`. This alone switches on canonical and language links,
       the absolute share-image URL, the sitemap, and removes the noindex tag.
-- [ ] Form: create a Web3Forms (or similar) key for info@evcompanyks.com and put the endpoint in `data-endpoint`
-      on the form in `src/pages/[lang]/index.astro`; send a test request.
+- [ ] Form: create a free Web3Forms key for info@evcompanyks.com (web3forms.com) and paste it as `accessKey` in
+      `src/data/form.ts`. The button text and note switch to "send directly" by themselves. Send one test request.
 - [ ] Remove the "Parapamje për shqyrtim" badge in the footer (`footer.preview` in content.ts and its span in index.astro).
 - [ ] Hosting: Cloudflare Pages (free). Domain stays registered at Namecheap, DNS moves to Cloudflare (needed for the admin lock);
       copy the existing email (MX/TXT) records exactly.

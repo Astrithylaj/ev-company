@@ -6,6 +6,7 @@ import { exampleProjects } from '../../data/projects';
 import { defaultContent, visibleProjects, renderProjects, renderSocial, renderBanner, renderMobileChat } from '../../lib/site';
 import { legal } from '../../data/legal';
 import { content, contact, type Lang } from '../../data/content';
+import { formService } from '../../data/form';
 
 export function getStaticPaths() {
   return [{ params: { lang: 'sq' } }, { params: { lang: 'en' } }];
@@ -19,6 +20,7 @@ const ids = { services: 'sherbimet', projects: 'projektet', process: 'si-punojme
 const site = defaultContent();
 const projList = visibleProjects(site).length ? visibleProjects(site) : import.meta.env.DEV ? exampleProjects.map((p) => ({ ...p, visible: true })) : [];
 const showProjects = projList.length > 0;
+const direct = !!formService.accessKey;
 ---
 <Base lang={lang} intro>
   <header class="site-header" data-header>
@@ -167,11 +169,11 @@ const showProjects = projList.length > 0;
           </dl>
           <div class="details__social" data-slot="social"><Fragment set:html={renderSocial(site)} /></div>
         </div>
-        <form class="qform" data-form data-email={contact.email} data-subject={t.contact.form.subject} data-endpoint="" data-sent={t.contact.form.sent} data-failed={t.contact.form.failed} novalidate>
+        <form class="qform" data-form data-email={contact.email} data-subject={t.contact.form.subject} data-endpoint={direct ? formService.endpoint : ""} data-key={formService.accessKey} data-timeout={formService.timeoutMs} data-sent={t.contact.form.sent} data-failed={t.contact.form.failed} data-sending={t.contact.form.sending} data-required={t.contact.form.required} data-phone-invalid={t.contact.form.phoneInvalid} data-mail-opened={t.contact.form.mailOpened} novalidate>
           <h3 class="qform__title">{t.contact.form.title}</h3>
-          <label class="field"><span>{t.contact.form.name}</span><input id="f-name" name="name" autocomplete="name" required /></label>
-          <label class="field"><span>{t.contact.form.phone}</span><input id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required /></label>
-          <label class="field"><span>{t.contact.form.location}</span><input id="f-location" name="location" autocomplete="address-level2" placeholder={t.contact.form.locationPh} /></label>
+          <label class="field"><span>{t.contact.form.name}</span><input id="f-name" name="name" autocomplete="name" maxlength="80" required /></label>
+          <label class="field"><span>{t.contact.form.phone}</span><input id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="30" required /></label>
+          <label class="field"><span>{t.contact.form.location}</span><input id="f-location" name="location" autocomplete="address-level2" maxlength="80" placeholder={t.contact.form.locationPh} /></label>
           <fieldset class="field choice">
             <legend>{t.contact.form.who}</legend>
             <div class="choice__row">
@@ -187,10 +189,11 @@ const showProjects = projList.length > 0;
               <option value="other">{t.contact.form.other}</option>
             </select>
           </label>
-          <label class="field"><span>{t.contact.form.message}</span><textarea id="f-message" name="message" rows="3" placeholder={t.contact.form.messagePh}></textarea></label>
-          <button class="btn btn--dark" type="submit">{t.contact.form.submit}</button>
+          <label class="field"><span>{t.contact.form.message}</span><textarea id="f-message" name="message" rows="3" maxlength="1500" placeholder={t.contact.form.messagePh}></textarea></label>
+          <input class="qform__trap" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true" />
+          <button class="btn btn--dark" type="submit">{direct ? t.contact.form.submitDirect : t.contact.form.submit}</button>
           <p class="qform__status" role="status" data-form-status></p>
-          <p class="qform__note">{t.contact.form.note} {t.contact.form.privacyNote} <a href={`/${lang}/${L.privacy.slug}/`}>{L.labels.privacy}</a>.</p>
+          <p class="qform__note">{direct ? t.contact.form.noteDirect : t.contact.form.note} {t.contact.form.privacyNote} <a href={`/${lang}/${L.privacy.slug}/`}>{L.labels.privacy}</a>.</p>
         </form>
       </div>
     </section>

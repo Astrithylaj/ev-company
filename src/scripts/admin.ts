@@ -13,10 +13,19 @@ let editingId: string | null = null;
 let busy = 0; // uploads in progress
 
 // ---------- server ----------
+const OFFLINE = 'Nuk u lidh me serverin. Kontrolloni internetin dhe provoni përsëri. Nëse nuk bën, rifreskoni faqen dhe hyni përsëri: ndryshimet tuaja mbeten të ruajtura në këtë pajisje.';
+const DRAFT = 'ev-admin-draft';
 async function api(path: string, init: RequestInit = {}) {
-  const res = await fetch(path, { ...init, headers: { 'x-ev-admin': '1', ...(init.body && !(init.body instanceof FormData) ? { 'content-type': 'application/json' } : {}), ...(init.headers || {}) }, credentials: 'same-origin' });
+  let res: Response;
+  try {
+    res = await fetch(path, { ...init, headers: { 'x-ev-admin': '1', ...(init.body && !(init.body instanceof FormData) ? { 'content-type': 'application/json' } : {}), ...(init.headers || {}) }, credentials: 'same-origin' });
+  } catch {
+    // no internet, or the login expired and Cloudflare wants a new code
+    throw new Error(OFFLINE);
+  }
   let data: any = null;
   try { data = await res.json(); } catch {}
+  if (res.ok && !data) throw new Error(OFFLINE);
   if (!res.ok) throw new Error(data?.error || (res.status === 403 ? 'Sesioni ka skaduar. Rifreskoni faqen dhe hyni përsëri.' : 'Diçka shkoi keq. Provoni përsëri.'));
   return data;
 }
@@ -32,6 +41,8 @@ function refreshBar(msg?: string, tone: 'ok' | 'err' | '' = '') {
   undo.hidden = d || !canUndo;
   status.dataset.tone = tone || (d ? 'warn' : '');
   status.textContent = msg ?? (busy ? 'Duke ngarkuar fotot…' : d ? 'Keni ndryshime të paruajtura.' : 'Të gjitha ndryshimet janë ruajtur.');
+  // unsaved edits survive a refresh or a lost connection
+  try { if (d) localStorage.setItem(DRAFT, JSON.stringify({ at: Date.now(), state })); else localStorage.removeItem(DRAFT); } catch {}
 }
 const changed = () => refreshBar();
 
@@ -284,7 +295,25 @@ function fillAll() {
   if (editingId && cur()) openEditor(editingId); else { editingId = null; $('[data-editor]').hidden = true; $('[data-list-view]').hidden = false; renderList(); }
 }
 
+// edits left unsaved last time (lost connection, expired login, closed tab) can be brought back
+type Draft = { at: number; state: SiteContent } | null;
+function readDraft(): Draft { try { return JSON.parse(localStorage.getItem(DRAFT) || 'null'); } catch { return null; } }
+function offerDraft(draft: Draft) {
+  const btn = $<HTMLButtonElement>('[data-restore]');
+  if (!draft?.state || JSON.stringify(draft.state) === saved || Date.now() - draft.at > 14 * 864e5) { try { localStorage.removeItem(DRAFT); } catch {} return; }
+  const when = new Date(draft.at).toLocaleString('sq-AL', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
+  btn.hidden = false;
+  refreshBar(`Keni ndryshime të paruajtura nga ${when}.`, 'warn');
+  try { localStorage.setItem(DRAFT, JSON.stringify(draft)); } catch {}
+  btn.addEventListener('click', () => {
+    state = draft!.state; btn.hidden = true;
+    fillAll();
+    refreshBar('Ndryshimet u rikthyen. Kontrollojini dhe shtypni “Ruaj ndryshimet”.', 'warn');
+  }, { once: true });
+}
+
 export async function startAdmin() {
+  const draft = readDraft(); // read before anything can overwrite it
   setupTabs();
   try {
     const r = await api('/api/admin/content');
@@ -306,4 +335,5 @@ export async function startAdmin() {
   $('[data-undo]').addEventListener('click', undo);
   window.addEventListener('beforeunload', (e) => { if (dirty()) { e.preventDefault(); e.returnValue = ''; } });
   refreshBar();
+  offerDraft(draft);
 }

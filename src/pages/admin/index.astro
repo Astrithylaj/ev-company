@@ -162,6 +162,7 @@ const services = content.sq.services.list.map((s) => ({ id: s.id, label: s.short
     <div class="savebar" data-savebar>
       <p class="savebar__status" role="status" data-status>Të gjitha ndryshimet janë ruajtur.</p>
       <div class="savebar__actions">
+        <button class="btn btn--ghost" type="button" data-restore hidden>Rikthe ndryshimet</button>
         <button class="btn btn--ghost" type="button" data-undo hidden>Kthe ruajtjen e fundit</button>
         <button class="btn btn--primary" type="button" data-save disabled>Ruaj ndryshimet</button>
       </div>

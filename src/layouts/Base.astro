@@ -47,6 +47,12 @@ const abs = (path: string) => (Astro.site ? new URL(path, Astro.site).href : pat
           var force = location.search.indexOf('intro') > -1;
           if (introPage && (force || (!matchMedia('(prefers-reduced-motion: reduce)').matches && !sessionStorage.getItem('ev-intro')))) d.classList.add('intro');
         } catch (e) {}
+        // safety net: if the page script never starts (bad connection, blocked, old browser), show the page as it is
+        setTimeout(function () {
+          if (window.__evBooted) return;
+          d.classList.remove('js', 'intro');
+          var h = document.querySelector('[data-hero]'); if (h) h.classList.add('no-webgl');
+        }, 5000);
       })(document.documentElement);
     </script>
   </head>

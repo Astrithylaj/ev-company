@@ -35,7 +35,9 @@ export function defaultContent(): SiteContent {
 
 // ---------- validation (server side; the panel also checks, but this is what counts) ----------
 
-const str = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
+// text fields: no line breaks or invisible control characters, trimmed and capped
+const str = (v: unknown, max: number) => (typeof v === 'string' ? v.replace(/[\u0000-\u001f\u007f\u2028\u2029]+/g, ' ').replace(/ {2,}/g, ' ').trim().slice(0, max) : '');
+const realDate = (v: string) => { const d = new Date(v + 'T00:00:00Z'); return !isNaN(+d) && d.toISOString().slice(0, 10) === v; };
 const digitsPlus = (v: string) => v.replace(/[^\d+]/g, '').replace(/(?!^)\+/g, '');
 const isHttps = (v: string) => /^https:\/\/[^\s<>"']+$/i.test(v);
 const MEDIA_RE = /^\/media\/projects\/[a-z0-9-]{8,64}\.(jpg|jpeg|png|webp)$/i;
@@ -44,6 +46,8 @@ const STATIC_PHOTO_RE = /^[\w.-]{1,80}\.(jpg|jpeg|png|webp)$/i; // files shipped
 export function validateContent(input: unknown): { ok: true; value: SiteContent } | { ok: false; error: string } {
   if (!input || typeof input !== 'object') return { ok: false, error: 'Të dhënat mungojnë.' };
   const i = input as Record<string, any>;
+  if (!Array.isArray(i.projects) || !i.contact || typeof i.contact !== 'object') return { ok: false, error: 'Të dhënat nuk janë të plota. Rifreskoni faqen dhe provoni përsëri.' };
+  if (i.projects.length > 60) return { ok: false, error: 'Lejohen deri në 60 projekte.' };
   const c = i.contact ?? {};
   const s = i.social ?? {};
   const b = i.banner ?? {};
@@ -74,13 +78,14 @@ export function validateContent(input: unknown): { ok: true; value: SiteContent 
   for (const k of ['whatsapp', 'viber'] as const) {
     if (out.social[k] && out.social[k].replace('+', '').length < 8) return { ok: false, error: `Numri i ${k === 'whatsapp' ? 'WhatsApp' : 'Viber'} nuk është i saktë.` };
   }
-  if (out.banner.until && !/^\d{4}-\d{2}-\d{2}$/.test(out.banner.until)) return { ok: false, error: 'Data e njoftimit nuk është e saktë.' };
+  if (out.banner.until && (!/^\d{4}-\d{2}-\d{2}$/.test(out.banner.until) || !realDate(out.banner.until))) return { ok: false, error: 'Data e njoftimit nuk është e saktë.' };
   if (out.banner.on && !out.banner.sq) return { ok: false, error: 'Njoftimi është aktiv, por teksti shqip mungon.' };
 
-  const list = Array.isArray(i.projects) ? i.projects.slice(0, 60) : [];
+  const list = i.projects as any[];
   const seen = new Set<string>();
   for (const p of list) {
     if (!p || typeof p !== 'object') continue;
+    if (Array.isArray((p as any).photos) && (p as any).photos.length > 12) return { ok: false, error: 'Lejohen deri në 12 foto për projekt.' };
     const id = str(p.id, 64).replace(/[^\w-]/g, '') || `p-${Math.random().toString(36).slice(2, 10)}`;
     if (seen.has(id)) continue;
     seen.add(id);

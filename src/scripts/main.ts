@@ -3,6 +3,7 @@ const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const clamp = (v: number, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 
 export function boot() {
+  (window as Window & { __evBooted?: boolean }).__evBooted = true;
   header();
   menu();
   const hero = heroSetup();
@@ -299,21 +300,33 @@ function flashlight() {
   if (!sections.length || reduced) return;
   const hover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   // per section: current and target glow position in px
-  const st = sections.map((el) => ({ el, x: el.clientWidth * 0.3, y: 300, tx: el.clientWidth * 0.3, ty: 300 }));
+  const st = sections.map((el) => {
+    const glow = document.createElement('div');
+    glow.className = 'plan__glow'; glow.setAttribute('aria-hidden', 'true');
+    el.prepend(glow); el.classList.add('has-glow');
+    return { el, glow, on: false, x: el.clientWidth * 0.3, y: 300, tx: el.clientWidth * 0.3, ty: 300 };
+  });
+  // only sections on screen are animated
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) { const s = st.find((x) => x.el === e.target); if (s) s.on = e.isIntersecting; }
+    kick();
+  });
+  st.forEach((s) => io.observe(s.el));
   let raf = 0;
   const loop = () => {
     raf = 0;
     let moving = false;
     for (const s of st) {
+      if (!s.on) continue;
       s.x += (s.tx - s.x) * 0.12;
       s.y += (s.ty - s.y) * 0.12;
       if (Math.abs(s.tx - s.x) + Math.abs(s.ty - s.y) > 0.5) moving = true;
-      s.el.style.setProperty('--mx', `${s.x.toFixed(1)}px`);
-      s.el.style.setProperty('--my', `${s.y.toFixed(1)}px`);
+      s.glow.style.setProperty('--mx', `${s.x.toFixed(1)}px`);
+      s.glow.style.setProperty('--my', `${s.y.toFixed(1)}px`);
     }
     if (moving) raf = requestAnimationFrame(loop);
   };
-  const kick = () => { if (!raf) raf = requestAnimationFrame(loop); };
+  function kick() { if (!raf) raf = requestAnimationFrame(loop); }
 
   if (hover) {
     let px = -1, py = -1;
@@ -366,44 +379,91 @@ function contactSwitch() {
   io.observe(el);
 }
 
-/* ---------- Quote form: composes an email (no backend yet) ---------- */
+/* ---------- Quote form ----------
+   With an access key (src/data/form.ts) requests go straight to Web3Forms.
+   Without one, the visitor's email app opens with the request filled in. */
 function form() {
   const f = document.querySelector<HTMLFormElement>('[data-form]');
   if (!f) return;
+  const d = f.dataset;
   const status = f.querySelector<HTMLElement>('[data-form-status]')!;
-  const labelOf = (el: Element) => (el.closest('label')?.querySelector('span') ?? el.closest('fieldset')?.querySelector('legend'))?.textContent?.trim() ?? '';
+  const btn = f.querySelector<HTMLButtonElement>('button[type=submit]')!;
+  const name = f.querySelector<HTMLInputElement>('[name=name]')!;
+  const phone = f.querySelector<HTMLInputElement>('[name=phone]')!;
+  // live contact details (the admin can change them), used in messages
+  const fill = (msg = '') => msg
+    .replace('{phone}', document.querySelector('[data-c-phone]')?.textContent?.trim() || '')
+    .replace('{email}', d.email || '');
+  const say = (msg: string, state: 'ok' | 'error' | 'info') => { status.textContent = fill(msg); status.dataset.state = state; };
+  const labelOf = (el: Element) => ((el as HTMLInputElement).type === 'radio'
+    ? el.closest('fieldset')?.querySelector('legend')
+    : el.closest('label')?.querySelector('span'))?.textContent?.trim() ?? '';
+  const digits = (v: string) => v.replace(/\D/g, '').length;
+
+  function check(): boolean {
+    for (const el of [name, phone]) el.setCustomValidity('');
+    if (!name.value.trim()) name.setCustomValidity(d.required!);
+    if (!phone.value.trim()) phone.setCustomValidity(d.required!);
+    else if (!/^[+\d\s().\/-]+$/.test(phone.value.trim()) || digits(phone.value) < 6 || digits(phone.value) > 15) phone.setCustomValidity(d.phoneInvalid!);
+    return f.checkValidity();
+  }
+  // clear the error as soon as the visitor fixes the field
+  for (const el of [name, phone]) el.addEventListener('input', () => { if (!el.validity.valid) check(); });
+
+  let busy = false;
   f.addEventListener('submit', async (e) => {
     e.preventDefault();
-    if (!f.checkValidity()) { f.reportValidity(); return; }
+    if (busy) return;
+    if (!check()) {
+      // bring the first wrong field to the middle of the screen (clear of the fixed header) before the browser's hint shows
+      const bad = f.querySelector<HTMLElement>(':invalid');
+      if (bad) { window.scrollTo({ top: bad.getBoundingClientRect().top + window.scrollY - window.innerHeight * 0.35, behavior: 'instant' as ScrollBehavior }); bad.focus({ preventScroll: true }); }
+      f.reportValidity();
+      return;
+    }
     const sel = f.querySelector<HTMLSelectElement>('[data-service-select]')!;
     const service = sel.value ? sel.options[sel.selectedIndex].text : '';
     const fields: [string, string][] = [];
-    for (const name of ['name', 'phone', 'location', 'who']) {
-      const el = f.querySelector<HTMLInputElement>(`[name=${name}]${name === 'who' ? ':checked' : ''}`);
+    for (const n of ['name', 'phone', 'location', 'who']) {
+      const el = f.querySelector<HTMLInputElement>(`[name=${n}]${n === 'who' ? ':checked' : ''}`);
       if (el && el.value.trim()) fields.push([labelOf(el), el.value.trim()]);
     }
     if (service) fields.push([labelOf(sel), service]);
-    const message = (f.querySelector<HTMLTextAreaElement>('[name=message]')!.value || '').trim();
-    const subject = `${f.dataset.subject}${service ? ` – ${service}` : ''}`;
-    const body = fields.map(([k, v]) => `${k}: ${v}`).join('\n') + (message ? `\n\n${message}` : '');
+    const msgEl = f.querySelector<HTMLTextAreaElement>('[name=message]')!;
+    const message = msgEl.value.trim();
+    const subject = `${d.subject}${service ? ` – ${service}` : ''}`;
 
-    // At launch: set data-endpoint (e.g. a Web3Forms URL + key) and requests are sent directly.
-    if (f.dataset.endpoint) {
-      const btn = f.querySelector<HTMLButtonElement>('button[type=submit]')!;
-      btn.disabled = true; status.textContent = '';
+    // spam trap: bots tick the hidden box; pretend it worked and send nothing
+    if (f.querySelector<HTMLInputElement>('[name=botcheck]')?.checked) { say(d.sent!, 'ok'); f.reset(); return; }
+
+    if (d.endpoint && d.key) {
+      busy = true; btn.disabled = true; say(d.sending!, 'info');
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), Number(d.timeout) || 15000);
       try {
-        const res = await fetch(f.dataset.endpoint, {
-          method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-          body: JSON.stringify({ subject, message: body, ...Object.fromEntries(fields) }),
+        const res = await fetch(d.endpoint, {
+          method: 'POST', signal: ctrl.signal,
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({
+            access_key: d.key, subject, from_name: 'EV COMPANY – faqja',
+            ...Object.fromEntries(fields), ...(message ? { [labelOf(msgEl)]: message } : {}),
+          }),
         });
-        if (!res.ok) throw new Error(String(res.status));
-        status.textContent = f.dataset.sent!; status.dataset.state = 'ok'; f.reset();
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || data.success !== true) throw new Error(String(res.status));
+        say(d.sent!, 'ok'); f.reset();
       } catch {
-        status.textContent = f.dataset.failed!; status.dataset.state = 'error';
-      } finally { btn.disabled = false; }
+        say(d.failed!, 'error');
+      } finally { clearTimeout(timer); busy = false; btn.disabled = false; }
       return;
     }
-    window.location.href = `mailto:${f.dataset.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+    const body = fields.map(([k, v]) => `${k}: ${v}`).join('\n') + (message ? `\n\n${message}` : '');
+    const a = document.createElement('a');
+    a.href = `mailto:${d.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    a.hidden = true;
+    document.body.append(a); a.click(); a.remove();
+    say(d.mailOpened!, 'info');
   });
 }
 

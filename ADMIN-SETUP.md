@@ -84,7 +84,7 @@ Cloudflare Access protects the custom domain only if Cloudflare manages its DNS.
 
 ### 6. Also on launch day (see README launch checklist)
 
-- Form: Web3Forms key for info@evcompanyks.com, put the endpoint in `data-endpoint` on the form.
+- Form: Web3Forms key for info@evcompanyks.com, pasted as `accessKey` in `src/data/form.ts`.
 - Remove the "Parapamje për shqyrtim" badge.
 - Legal pages: fill in the company NUI in `src/data/legal.ts` and confirm the details with Ermal.
 
