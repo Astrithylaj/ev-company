@@ -31,7 +31,8 @@ const sq = {
   },
   nav: { services: 'Shërbimet', projects: 'Projektet', process: 'Si punojmë', company: 'Kompania', contact: 'Kontakti' },
   skip: 'Kalo te përmbajtja',
-  callShort: 'Na telefononi',
+  callShort: 'Kontakti',
+  callAria: 'Kontakti: na telefononi në',
   menu: 'Menyja',
   close: 'Mbyll',
   hero: {
@@ -144,7 +145,8 @@ const en: typeof sq = {
   },
   nav: { services: 'Services', projects: 'Projects', process: 'How we work', company: 'Company', contact: 'Contact' },
   skip: 'Skip to content',
-  callShort: 'Call us',
+  callShort: 'Contact',
+  callAria: 'Contact: call us on',
   menu: 'Menu',
   close: 'Close',
   hero: {

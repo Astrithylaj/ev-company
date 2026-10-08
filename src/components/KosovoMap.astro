@@ -10,6 +10,12 @@ const dots = data.dots.map(([x, y]) => {
   return { x, y, d: Math.round(d * 1000) / 1000 };
 });
 const towns = (data.towns ?? []).map(([name, x, y]) => ({ name: String(name), x: Number(x), y: Number(y), d: Math.round((Math.hypot(Number(x) - px, Number(y) - py) / maxD) * 1000) / 1000 }));
+// where each town name sits relative to its light, so neighbours never overlap: [dx, dy, anchor]
+const place: Record<string, [number, number, string]> = {
+  Ferizaj: [-9, 4, 'end'], Suharekë: [0, 19, 'middle'], Vushtrri: [9, 13, 'start'], Mitrovicë: [-9, 4, 'end'],
+  Skenderaj: [-9, 4, 'end'], Istog: [0, -10, 'middle'], Kamenicë: [0, -10, 'middle'], Gjilan: [9, 4, 'start'],
+};
+const tl = (t: { name: string; x: number; y: number }) => { const [dx, dy, a] = place[t.name] ?? [9, 4, 'start']; return { x: t.x + dx, y: t.y + dy, a }; };
 ---
 <figure class="kmap" data-kmap>
   <svg viewBox={`0 0 ${data.w} ${data.h}`} role="img" aria-label={label}>
@@ -19,6 +25,7 @@ const towns = (data.towns ?? []).map(([name, x, y]) => ({ name: String(name), x:
     </g>
     <g class="kmap__towns" aria-hidden="true">
       {towns.map((t) => <circle class="kmap__town" cx={t.x} cy={t.y} r="4.6" style={`--d:${t.d}`}><title>{t.name}</title></circle>)}
+      {towns.map((t) => { const l = tl(t); return <text class="kmap__townlabel" x={l.x} y={l.y} text-anchor={l.a} style={`--d:${t.d}`}>{t.name}</text>; })}
     </g>
     <g class="kmap__base" transform={`translate(${px} ${py})`}>
       <circle class="kmap__ring" r="14" />
