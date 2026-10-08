@@ -1,6 +1,5 @@
-// Editable site content: what the admin panel can change, its defaults, validation and HTML rendering.
-// Shared by the Astro build (static fallback) and the Cloudflare functions (live content), so both render identically.
-// No Node or Astro imports here.
+// Site content (contact, social links, notice, projects) and the HTML for those parts of the page.
+// Edit the data files in src/data/ to change them.
 
 import { content, contact as baseContact, type Lang } from '../data/content';
 import { projects as baseProjects, type Project as BaseProject } from '../data/projects';
@@ -8,18 +7,14 @@ import { projects as baseProjects, type Project as BaseProject } from '../data/p
 export type Project = BaseProject & { visible: boolean };
 
 export type SiteContent = {
-  updatedAt: string;
   contact: { phone: string; email: string; street: string; city: string; hours: { sq: string; en: string } };
   social: { facebook: string; instagram: string; tiktok: string; whatsapp: string; viber: string };
   banner: { on: boolean; until: string; sq: string; en: string };
   projects: Project[];
 };
 
-export const SERVICE_IDS = ['ndricim', 'instalime', 'solare', 'smart', 'mirembajtje', 'platforme', 'materiale'] as const;
-
 export function defaultContent(): SiteContent {
   return {
-    updatedAt: '',
     contact: {
       phone: baseContact.phoneDisplay,
       email: baseContact.email,
@@ -27,84 +22,14 @@ export function defaultContent(): SiteContent {
       city: baseContact.city,
       hours: { sq: content.sq.contact.hours, en: content.en.contact.hours },
     },
-    // the company number is on WhatsApp (confirmed); other channels are added from the admin when known
+    // the company number is on WhatsApp (confirmed). Add Facebook / Instagram / TikTok / Viber here when known.
     social: { facebook: '', instagram: '', tiktok: '', whatsapp: baseContact.phoneDisplay, viber: '' },
     banner: { on: false, until: '', sq: '', en: '' },
     projects: baseProjects.map((p) => ({ ...p, visible: true })),
   };
 }
 
-// ---------- validation (server side; the panel also checks, but this is what counts) ----------
-
-// text fields: no line breaks or invisible control characters, trimmed and capped
-const str = (v: unknown, max: number) => (typeof v === 'string' ? v.replace(/[\u0000-\u001f\u007f\u2028\u2029]+/g, ' ').replace(/ {2,}/g, ' ').trim().slice(0, max) : '');
-const realDate = (v: string) => { const d = new Date(v + 'T00:00:00Z'); return !isNaN(+d) && d.toISOString().slice(0, 10) === v; };
 const digitsPlus = (v: string) => v.replace(/[^\d+]/g, '').replace(/(?!^)\+/g, '');
-const isHttps = (v: string) => /^https:\/\/[^\s<>"']+$/i.test(v);
-const MEDIA_RE = /^\/media\/projects\/[a-z0-9-]{8,64}\.(jpg|jpeg|png|webp)$/i;
-const STATIC_PHOTO_RE = /^[\w.-]{1,80}\.(jpg|jpeg|png|webp)$/i; // files shipped in /public/projects/
-
-export function validateContent(input: unknown): { ok: true; value: SiteContent } | { ok: false; error: string } {
-  if (!input || typeof input !== 'object') return { ok: false, error: 'Të dhënat mungojnë.' };
-  const i = input as Record<string, any>;
-  if (!Array.isArray(i.projects) || !i.contact || typeof i.contact !== 'object') return { ok: false, error: 'Të dhënat nuk janë të plota. Rifreskoni faqen dhe provoni përsëri.' };
-  if (i.projects.length > 60) return { ok: false, error: 'Lejohen deri në 60 projekte.' };
-  const c = i.contact ?? {};
-  const s = i.social ?? {};
-  const b = i.banner ?? {};
-  const out: SiteContent = {
-    updatedAt: new Date().toISOString(),
-    contact: {
-      phone: str(c.phone, 40),
-      email: str(c.email, 120),
-      street: str(c.street, 120),
-      city: str(c.city, 80),
-      hours: { sq: str(c.hours?.sq, 120), en: str(c.hours?.en, 120) },
-    },
-    social: {
-      facebook: str(s.facebook, 300),
-      instagram: str(s.instagram, 300),
-      tiktok: str(s.tiktok, 300),
-      whatsapp: digitsPlus(str(s.whatsapp, 30)),
-      viber: digitsPlus(str(s.viber, 30)),
-    },
-    banner: { on: !!b.on, until: str(b.until, 10), sq: str(b.sq, 180), en: str(b.en, 180) },
-    projects: [],
-  };
-  if (!out.contact.phone || digitsPlus(out.contact.phone).replace('+', '').length < 6) return { ok: false, error: 'Numri i telefonit nuk është i saktë.' };
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(out.contact.email)) return { ok: false, error: 'Emaili nuk është i saktë.' };
-  for (const k of ['facebook', 'instagram', 'tiktok'] as const) {
-    if (out.social[k] && !isHttps(out.social[k])) return { ok: false, error: `Lidhja e ${k} duhet të fillojë me https://` };
-  }
-  for (const k of ['whatsapp', 'viber'] as const) {
-    if (out.social[k] && out.social[k].replace('+', '').length < 8) return { ok: false, error: `Numri i ${k === 'whatsapp' ? 'WhatsApp' : 'Viber'} nuk është i saktë.` };
-  }
-  if (out.banner.until && (!/^\d{4}-\d{2}-\d{2}$/.test(out.banner.until) || !realDate(out.banner.until))) return { ok: false, error: 'Data e njoftimit nuk është e saktë.' };
-  if (out.banner.on && !out.banner.sq) return { ok: false, error: 'Njoftimi është aktiv, por teksti shqip mungon.' };
-
-  const list = i.projects as any[];
-  const seen = new Set<string>();
-  for (const p of list) {
-    if (!p || typeof p !== 'object') continue;
-    if (Array.isArray((p as any).photos) && (p as any).photos.length > 12) return { ok: false, error: 'Lejohen deri në 12 foto për projekt.' };
-    const id = str(p.id, 64).replace(/[^\w-]/g, '') || `p-${Math.random().toString(36).slice(2, 10)}`;
-    if (seen.has(id)) continue;
-    seen.add(id);
-    const lang = (l: any) => ({ title: str(l?.title, 120), place: str(l?.place, 80), client: str(l?.client, 120), text: str(l?.text, 700) });
-    const proj: Project = {
-      id,
-      visible: p.visible !== false,
-      year: str(p.year, 10),
-      services: (Array.isArray(p.services) ? p.services : []).filter((x: unknown) => typeof x === 'string' && (SERVICE_IDS as readonly string[]).includes(x)),
-      photos: (Array.isArray(p.photos) ? p.photos : []).filter((f: unknown) => typeof f === 'string' && (MEDIA_RE.test(f) || STATIC_PHOTO_RE.test(f))).slice(0, 12),
-      sq: lang(p.sq),
-      en: lang(p.en),
-    };
-    if (!proj.sq.title) return { ok: false, error: 'Çdo projekt duhet të ketë titull në shqip.' };
-    out.projects.push(proj);
-  }
-  return { ok: true, value: out };
-}
 
 // ---------- helpers ----------
 

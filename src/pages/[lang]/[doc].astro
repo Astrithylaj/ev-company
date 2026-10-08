@@ -17,7 +17,7 @@ const doc: LegalDoc = Astro.params.doc === L.privacy.slug ? L.privacy : L.terms;
 const otherLang: Lang = lang === 'sq' ? 'en' : 'sq';
 const t = content[lang];
 const year = new Date().getFullYear();
-// paragraphs carry {email} {phone} {address}; each becomes a span the edge keeps in sync with the admin panel
+// paragraphs carry {email} {phone} {address}, filled in from the contact details
 const parts = (p: string) => p.split(/(\{email\}|\{phone\}|\{address\})/g);
 ---
 <Base lang={lang} title={`${doc.title} | EV COMPANY sh.p.k.`} path={`/${lang}/${doc.slug}/`} altPath={`/${otherLang}/${doc.other}/`}>

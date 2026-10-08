@@ -390,7 +390,7 @@ function form() {
   const btn = f.querySelector<HTMLButtonElement>('button[type=submit]')!;
   const name = f.querySelector<HTMLInputElement>('[name=name]')!;
   const phone = f.querySelector<HTMLInputElement>('[name=phone]')!;
-  // live contact details (the admin can change them), used in messages
+  // contact details as shown on the page, used in messages
   const fill = (msg = '') => msg
     .replace('{phone}', document.querySelector('[data-c-phone]')?.textContent?.trim() || '')
     .replace('{email}', d.email || '');

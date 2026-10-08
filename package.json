@@ -7,9 +7,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "map": "node scripts/kosovo.mjs",
-    "cf:dev": "astro build && wrangler pages dev --port 8788 --binding DEV_ADMIN_BYPASS=1",
-    "cf:deploy": "astro build && wrangler pages deploy"
+    "map": "node scripts/kosovo.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
@@ -18,10 +16,8 @@
     "three": "^0.186.1"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^5.20261007.1",
     "d3-geo": "^3.1.1",
     "topojson-client": "^3.1.0",
-    "world-atlas": "^2.0.2",
-    "wrangler": "^4.148.0"
+    "world-atlas": "^2.0.2"
   }
 }

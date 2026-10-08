@@ -36,7 +36,7 @@ The page is a street at night. Black is the default and the logo's orange→yell
 - **Installation plan + flashlight**: Process, Company and Coverage sit on a faint electrical installation plan
   (`public/plan.svg`: lamps, switches, sockets, breakers, earth). A warm glow follows the mouse and reveals it;
   on phones it follows the middle of the screen as you scroll. Static with reduced motion.
-- **Projects**: managed from the admin panel (see below). Hidden on the live site until at least one visible project exists.
+- **Projects** (data in `src/data/projects.ts`, photos in `public/projects/`): hidden on the live site until the first project is added.
   `npm run dev` shows placeholder cards so the layout can be reviewed. Markup comes from `renderProjects()` in `src/lib/site.ts`.
 - **How we work**: current runs along a cable through Supply → Installation → Testing → Maintenance as you scroll.
 - **Company**: short text, the client's own statement, and who they work with.
@@ -47,8 +47,8 @@ The page is a street at night. Black is the default and the logo's orange→yell
   is connected it opens the visitor's email app (and says what to do if none opens). With a Web3Forms key in
   `src/data/form.ts` it sends directly: phone number checked, spam trap, 15 s timeout, clear error with the live phone number.
 - **Phones**: a call / quote bar sticks to the bottom of the screen once you scroll past the hero
-  (plus a green WhatsApp button when a WhatsApp number is set in the admin).
-- **Notice**: optional short message above the hero title, set from the admin.
+  (plus a green WhatsApp button; the number is set in `src/lib/site.ts`).
+- **Notice**: optional short message above the hero title (e.g. holiday hours), switched on in `defaultContent()` in `src/lib/site.ts`.
 - **Legal pages**: `/sq/privatesia/`, `/sq/kushtet/`, `/en/privacy/`, `/en/terms/` (text in `src/data/legal.ts`,
   page in `src/pages/[lang]/[doc].astro`). Linked from the footer and under the form.
   No cookie banner is needed: the site sets no tracking or advertising cookies (see the privacy page).
@@ -64,30 +64,28 @@ The page is a street at night. Black is the default and the logo's orange→yell
 - `public/ev-company-logo.svg`, `ev-company-mark.svg`: logo vectorised from the client's screenshot.
   Replace with the original vector when Ermal sends it.
 
-## Admin panel
+## Adding projects, photos or other changes
 
-`/admin/`, for Ermal (and you): projects, contact details, social links, notice banner. Login with a one-time email code
-(Cloudflare Access). Setup steps, security and backups: **ADMIN-SETUP.md**. Short guide in Albanian for Ermal: **ADMIN-UDHEZIM.md**.
+There is no admin panel: the site is fully static. To add projects, put the photos (and a few words per project:
+where, when, what was done, for whom) in a folder, attach it in the Claude chat, and ask for them to be added.
 
-- `src/lib/site.ts`: content shape, defaults, server-side validation, and the HTML for the live parts.
-- `functions/`: Cloudflare Pages Functions (lock, content injection, API, photo serving). `server/`: their helpers.
-- `src/pages/admin/index.astro`, `src/scripts/admin.ts`, `src/styles/admin.css`: the panel.
-- Run everything locally with `npm run cf:dev` (http://localhost:8788, admin opens without login there).
-
-Projects can still be added in code (`src/data/projects.ts`) as the starting content, but the admin is the normal way.
+By hand: resize photos to about 1600 px wide (JPG or WebP), put them in `public/projects/`, copy the commented example
+in `src/data/projects.ts` and fill it in. The section and its menu link appear automatically.
+Contact details: `src/data/content.ts`. Social links and the notice: `defaultContent()` in `src/lib/site.ts`.
+Push to GitHub (`ev-company` repo) and Cloudflare rebuilds the live site in about a minute.
 
 ## Launch checklist
 
 - [ ] Client approves design and both languages; Albanian copy read by a native speaker.
 - [ ] Original logo files (SVG/AI/PDF) replace the vectorised ones in `public/`.
-- [ ] Admin set up (ADMIN-SETUP.md); Ermal adds real projects, social links, WhatsApp/Viber only if confirmed.
+- [ ] Real projects and photos (see above), social links, Viber only if confirmed.
 - [ ] Legal pages: company NUI filled in `src/data/legal.ts`; Ermal confirms the details (24-month retention, form service).
 - [ ] Domain confirmed: set `SITE` in `astro.config.mjs`. This alone switches on canonical and language links,
       the absolute share-image URL, the sitemap, and removes the noindex tag.
 - [ ] Form: create a free Web3Forms key for info@evcompanyks.com (web3forms.com) and paste it as `accessKey` in
       `src/data/form.ts`. The button text and note switch to "send directly" by themselves. Send one test request.
 - [ ] Remove the "Parapamje për shqyrtim" badge in the footer (`footer.preview` in content.ts and its span in index.astro).
-- [ ] Hosting: Cloudflare Pages (free). Domain stays registered at Namecheap, DNS moves to Cloudflare (needed for the admin lock);
+- [ ] Hosting: Cloudflare Pages (free). Domain stays registered at Namecheap, DNS moves to Cloudflare (needed to serve the main address without www);
       copy the existing email (MX/TXT) records exactly.
 - [ ] After launch: Google Search Console (submit `sitemap-index.xml`), Google Business Profile, Cloudflare Web Analytics.
 

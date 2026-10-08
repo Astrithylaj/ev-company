@@ -41,7 +41,7 @@ export const legal: Record<'sq' | 'en', { privacy: LegalDoc; terms: LegalDoc; la
         ] },
         { h: 'Kush tjetër i përpunon', p: [
           'Për ta mbajtur faqen në punë përdorim disa ofrues shërbimesh që i përpunojnë të dhënat vetëm sipas udhëzimeve tona:',
-          'Cloudflare, Inc. (hostimi i faqes, mbrojtja nga sulmet, hyrja e administratorit dhe statistika të vizitave pa cookies); Web3Forms (dërgimi i formularit në emailin tonë); ofruesi i emailit të kompanisë.',
+          'Cloudflare, Inc. (hostimi i faqes, mbrojtja nga sulmet dhe statistika të vizitave pa cookies); Web3Forms (dërgimi i formularit në emailin tonë); ofruesi i emailit të kompanisë.',
           'Disa nga këta ofrues mund t’i përpunojnë të dhënat jashtë Kosovës, në BE ose SHBA. Kemi zgjedhur ofrues që zbatojnë masa mbrojtëse të pranuara ndërkombëtarisht.',
         ] },
         { h: 'Sa kohë i ruajmë', p: [
@@ -55,10 +55,9 @@ export const legal: Record<'sq' | 'en', { privacy: LegalDoc; terms: LegalDoc; la
           'Faqja nuk përdor cookies për vizitorët: as për reklama, as për statistika. Prandaj nuk shfaqim dritare për pëlqimin e cookies.',
           'Faqja ruan në shfletuesin tuaj vetëm një shënim teknik (“ev-intro”) që animacioni hyrës të mos përsëritet. Fshihet vetë kur mbyllni skedën dhe nuk përmban të dhëna personale.',
           'Cloudflare mund të vendosë një cookie teknike sigurie për të dalluar njerëzit nga botët (p.sh. “__cf_bm”). Kjo është e domosdoshme për mbrojtjen e faqes dhe nuk përdoret për t’ju ndjekur.',
-          'Paneli i administrimit, që e përdor vetëm kompania, përdor një cookie hyrjeje (“CF_Authorization”) vetëm për personat e autorizuar.',
         ] },
         { h: 'Siguria', p: [
-          'Faqja hapet vetëm përmes lidhjes së sigurt (HTTPS). Qasja në administrim është e mbrojtur me kod që dërgohet në emailin e personit të autorizuar.',
+          'Faqja hapet vetëm përmes lidhjes së sigurt (HTTPS).',
         ] },
         { h: 'Ndryshimet', p: [
           'Nëse e ndryshojmë këtë politikë, data në krye të faqes ndryshon. Ndryshimet e rëndësishme do t’i shënojmë qartë në këtë faqe.',
@@ -118,7 +117,7 @@ export const legal: Record<'sq' | 'en', { privacy: LegalDoc; terms: LegalDoc; la
         ] },
         { h: 'Who else processes it', p: [
           'To run the website we use a few service providers that process data only on our instructions:',
-          'Cloudflare, Inc. (hosting, protection against attacks, administrator sign-in and cookie-free visit statistics); Web3Forms (delivering the form to our email); the company’s email provider.',
+          'Cloudflare, Inc. (hosting, protection against attacks and cookie-free visit statistics); Web3Forms (delivering the form to our email); the company’s email provider.',
           'Some of these providers may process data outside Kosovo, in the EU or the US. We chose providers that apply internationally recognised safeguards.',
         ] },
         { h: 'How long we keep it', p: [
@@ -132,10 +131,9 @@ export const legal: Record<'sq' | 'en', { privacy: LegalDoc; terms: LegalDoc; la
           'The website does not use cookies for visitors: not for advertising and not for statistics. That is why there is no cookie consent pop-up.',
           'It stores one technical note in your browser (“ev-intro”) so the opening animation does not repeat. It is deleted when you close the tab and contains no personal data.',
           'Cloudflare may set a technical security cookie to tell people from bots (for example “__cf_bm”). It is necessary to protect the site and is not used to track you.',
-          'The administration panel, used only by the company, uses a sign-in cookie (“CF_Authorization”) for authorised people only.',
         ] },
         { h: 'Security', p: [
-          'The website only opens over a secure connection (HTTPS). Access to administration is protected by a code sent to the authorised person’s email.',
+          'The website only opens over a secure connection (HTTPS).',
         ] },
         { h: 'Changes', p: [
           'If we change this policy, the date at the top changes. Important changes will be clearly marked on this page.',
