@@ -1,6 +1,6 @@
 // Legal pages: privacy & cookies, terms of use. Albanian and English.
 // Written for Kosovo Law No. 06/L-082 on the Protection of Personal Data (GDPR-based).
-// Not legal advice: have the client confirm the [PLACEHOLDER] items and, ideally, a lawyer read it before launch.
+// Not legal advice: ideally a lawyer reads it before launch.
 // {email}, {phone} and {address} are filled in from the live contact details.
 // Keep the "Processors" list true: update it if the form service or hosting changes.
 
@@ -15,8 +15,8 @@ export type LegalDoc = {
 };
 
 const company = 'EV COMPANY sh.p.k.';
-const nui = '[PLACEHOLDER: NUI i biznesit]';
-const nuiEn = '[PLACEHOLDER: business number (NUI)]';
+const nui = '812083484';
+const nuiEn = '812083484';
 
 export const legal: Record<'sq' | 'en', { privacy: LegalDoc; terms: LegalDoc; labels: { privacy: string; terms: string; back: string } }> = {
   sq: {

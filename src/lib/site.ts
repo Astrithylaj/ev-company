@@ -27,7 +27,8 @@ export function defaultContent(): SiteContent {
       city: baseContact.city,
       hours: { sq: content.sq.contact.hours, en: content.en.contact.hours },
     },
-    social: { facebook: '', instagram: '', tiktok: '', whatsapp: '', viber: '' },
+    // the company number is on WhatsApp (confirmed); other channels are added from the admin when known
+    social: { facebook: '', instagram: '', tiktok: '', whatsapp: baseContact.phoneDisplay, viber: '' },
     banner: { on: false, until: '', sq: '', en: '' },
     projects: baseProjects.map((p) => ({ ...p, visible: true })),
   };
@@ -170,8 +171,9 @@ const ICONS: Record<string, string> = {
 export function socialLinks(c: SiteContent): { key: string; label: string; href: string }[] {
   const s = c.social;
   const out: { key: string; label: string; href: string }[] = [];
-  if (s.whatsapp) out.push({ key: 'whatsapp', label: 'WhatsApp', href: `https://wa.me/${s.whatsapp.replace('+', '')}` });
-  if (s.viber) out.push({ key: 'viber', label: 'Viber', href: `viber://chat?number=${encodeURIComponent(s.viber.startsWith('+') ? s.viber : `+${s.viber}`)}` });
+  const wa = s.whatsapp.replace(/\D/g, ''), vb = s.viber.replace(/\D/g, '');
+  if (wa) out.push({ key: 'whatsapp', label: 'WhatsApp', href: `https://wa.me/${wa}` });
+  if (vb) out.push({ key: 'viber', label: 'Viber', href: `viber://chat?number=${encodeURIComponent('+' + vb)}` });
   if (s.facebook) out.push({ key: 'facebook', label: 'Facebook', href: s.facebook });
   if (s.instagram) out.push({ key: 'instagram', label: 'Instagram', href: s.instagram });
   if (s.tiktok) out.push({ key: 'tiktok', label: 'TikTok', href: s.tiktok });

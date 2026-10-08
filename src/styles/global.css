@@ -736,6 +736,13 @@ html.intro .hero .hero__line, html.intro .hero .hero__lead, html.intro .hero .he
 @media (max-width: 900px) {
   .mobilebar:has(.mobilebar__chat) { grid-template-columns: 1fr 1fr 56px; }
   .mobilebar a.mobilebar__chat { background: #25d366; color: #04140a; padding: 0; }
+  .mobilebar a { white-space: nowrap; }
+}
+@media (max-width: 374px) {
+  .mobilebar { gap: 6px; padding-inline: 12px; }
+  .mobilebar:has(.mobilebar__chat) { grid-template-columns: 1fr 1fr 48px; }
+  .mobilebar a { font-size: 0.9rem; gap: 6px; }
+  .mobilebar__call svg { display: none; }
 }
 
 /* ---------- 404 ---------- */
