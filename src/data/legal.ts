@@ -31,7 +31,7 @@ export const legal: Record<'sq' | 'en', { privacy: LegalDoc; terms: LegalDoc; la
           `Kontrollues i të dhënave është ${company}, {address}, NUI ${nui}. Për çdo pyetje rreth të dhënave tuaja na shkruani në {email} ose na telefononi në {phone}.`,
         ] },
         { h: 'Çfarë të dhënash mbledhim', p: [
-          'Vetëm atë që na jepni vetë në formularin “Kërkoni ofertë”: emrin, numrin e telefonit, qytetin ose lokacionin, nëse jeni klient privat, biznes apo institucion, shërbimin që ju intereson dhe mesazhin tuaj.',
+          'Vetëm atë që na jepni vetë në formularin “Kërkoni ofertë”: emrin, numrin e telefonit, emailin (nëse e jepni), qytetin ose lokacionin, nëse jeni klient privat, biznes apo institucion, shërbimin që ju intereson dhe mesazhin tuaj.',
           'Nëse na telefononi, na shkruani me email ose përmes WhatsApp, Viber apo rrjeteve sociale, ruajmë ato që na dërgoni, si numrin e telefonit dhe përmbajtjen e mesazhit. Këto aplikacione kanë politikat e tyre të privatësisë.',
           'Faqja nuk krijon profile të vizitorëve dhe nuk përdor reklama apo gjurmues të palëve të treta.',
         ] },
@@ -107,7 +107,7 @@ export const legal: Record<'sq' | 'en', { privacy: LegalDoc; terms: LegalDoc; la
           `The data controller is ${company}, {address}, business number (NUI) ${nuiEn}. For any question about your data, write to {email} or call {phone}.`,
         ] },
         { h: 'What we collect', p: [
-          'Only what you give us in the “Request a quote” form: your name, phone number, town or location, whether you are a private client, business or institution, the service you are interested in and your message.',
+          'Only what you give us in the “Request a quote” form: your name, phone number, email (if you give it), town or location, whether you are a private client, business or institution, the service you are interested in and your message.',
           'If you call us, email us, or write to us on WhatsApp, Viber or social media, we keep what you send us, such as your phone number and the content of your message. These apps have their own privacy policies.',
           'The website does not build visitor profiles and does not use advertising or third-party trackers.',
         ] },

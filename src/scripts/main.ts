@@ -390,6 +390,7 @@ function form() {
   const btn = f.querySelector<HTMLButtonElement>('button[type=submit]')!;
   const name = f.querySelector<HTMLInputElement>('[name=name]')!;
   const phone = f.querySelector<HTMLInputElement>('[name=phone]')!;
+  const email = f.querySelector<HTMLInputElement>('[name=email]');
   // contact details as shown on the page, used in messages
   const fill = (msg = '') => msg
     .replace('{phone}', document.querySelector('[data-c-phone]')?.textContent?.trim() || '')
@@ -401,14 +402,16 @@ function form() {
   const digits = (v: string) => v.replace(/\D/g, '').length;
 
   function check(): boolean {
-    for (const el of [name, phone]) el.setCustomValidity('');
+    for (const el of [name, phone, email]) el?.setCustomValidity('');
     if (!name.value.trim()) name.setCustomValidity(d.required!);
     if (!phone.value.trim()) phone.setCustomValidity(d.required!);
     else if (!/^[+\d\s().\/-]+$/.test(phone.value.trim()) || digits(phone.value) < 6 || digits(phone.value) > 15) phone.setCustomValidity(d.phoneInvalid!);
+    const em = email?.value.trim() || '';
+    if (email && em && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)) email.setCustomValidity(d.emailInvalid!);
     return f.checkValidity();
   }
   // clear the error as soon as the visitor fixes the field
-  for (const el of [name, phone]) el.addEventListener('input', () => { if (!el.validity.valid) check(); });
+  for (const el of [name, phone, email]) el?.addEventListener('input', () => { if (!el.validity.valid) check(); });
 
   let busy = false;
   f.addEventListener('submit', async (e) => {
@@ -424,7 +427,7 @@ function form() {
     const sel = f.querySelector<HTMLSelectElement>('[data-service-select]')!;
     const service = sel.value ? sel.options[sel.selectedIndex].text : '';
     const fields: [string, string][] = [];
-    for (const n of ['name', 'phone', 'location', 'who']) {
+    for (const n of ['name', 'phone', 'email', 'location', 'who']) {
       const el = f.querySelector<HTMLInputElement>(`[name=${n}]${n === 'who' ? ':checked' : ''}`);
       if (el && el.value.trim()) fields.push([labelOf(el), el.value.trim()]);
     }
@@ -446,6 +449,7 @@ function form() {
           headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
           body: JSON.stringify({
             access_key: d.key, subject, from_name: 'EV COMPANY – faqja',
+            ...(email?.value.trim() ? { email: email.value.trim() } : {}), // lets Ermal press Reply
             ...Object.fromEntries(fields), ...(message ? { [labelOf(msgEl)]: message } : {}),
           }),
         });

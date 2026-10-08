@@ -42,6 +42,7 @@ const initial = all.id; // the whole town lit, every service listed
       <div class="readout__item" role="tabpanel" id={`svc-${s.id}`} aria-labelledby={`tab-${s.id}`} hidden={s.id !== initial} tabindex="0">
         <h3 class="readout__title">{s.title}</h3>
         <p class="readout__text">{s.text}</p>
+        {s.points && <ul class="readout__points">{s.points.map((x) => <li>{x}</li>)}</ul>}
         {s.id === 'all' && (
           <ul class="readout__list">
             {services.map((x) => <li><button type="button" data-pick={x.id}>{x.title}</button></li>)}

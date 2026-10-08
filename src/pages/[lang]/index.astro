@@ -40,7 +40,7 @@ const direct = !!formService.accessKey;
         <a href="/sq/" aria-current={lang === 'sq' ? 'page' : undefined} hreflang="sq" lang="sq">SQ</a>
         <a href="/en/" aria-current={lang === 'en' ? 'page' : undefined} hreflang="en" lang="en">EN</a>
       </div>
-      <a class="btn btn--line site-header__call" href={contact.phoneHref}>{t.callShort}</a>
+      <a class="btn btn--line site-header__call" href={`#${ids.contact}`}>{t.nav.contact}</a>
       <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" data-menu>
         <span class="menu-btn__bars" aria-hidden="true"></span>
         <span class="menu-btn__text" data-open={t.menu} data-close={t.close}>{t.menu}</span>
@@ -68,9 +68,8 @@ const direct = !!formService.accessKey;
           </h1>
           <p class="hero__lead">{t.hero.lead}</p>
           <div class="hero__actions">
-            <a class="btn btn--glow" href={contact.phoneHref}>
+            <a class="btn btn--glow" href={`#${ids.contact}`}>
               <span>{t.hero.primary}</span>
-              <span class="btn__sub" data-c-phone>{contact.phoneDisplay}</span>
             </a>
             <a class="text-link" href={`#${ids.services}`}>{t.hero.secondary}</a>
           </div>
@@ -169,10 +168,11 @@ const direct = !!formService.accessKey;
           </dl>
           <div class="details__social" data-slot="social"><Fragment set:html={renderSocial(site)} /></div>
         </div>
-        <form class="qform" data-form data-email={contact.email} data-subject={t.contact.form.subject} data-endpoint={direct ? formService.endpoint : ""} data-key={formService.accessKey} data-timeout={formService.timeoutMs} data-sent={t.contact.form.sent} data-failed={t.contact.form.failed} data-sending={t.contact.form.sending} data-required={t.contact.form.required} data-phone-invalid={t.contact.form.phoneInvalid} data-mail-opened={t.contact.form.mailOpened} novalidate>
+        <form class="qform" data-form data-email={contact.email} data-subject={t.contact.form.subject} data-endpoint={direct ? formService.endpoint : ""} data-key={formService.accessKey} data-timeout={formService.timeoutMs} data-sent={t.contact.form.sent} data-failed={t.contact.form.failed} data-sending={t.contact.form.sending} data-required={t.contact.form.required} data-phone-invalid={t.contact.form.phoneInvalid} data-email-invalid={t.contact.form.emailInvalid} data-mail-opened={t.contact.form.mailOpened} novalidate>
           <h3 class="qform__title">{t.contact.form.title}</h3>
           <label class="field"><span>{t.contact.form.name}</span><input id="f-name" name="name" autocomplete="name" maxlength="80" required /></label>
           <label class="field"><span>{t.contact.form.phone}</span><input id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="30" required /></label>
+          <label class="field"><span>{t.contact.form.email}</span><input id="f-email" name="email" type="email" inputmode="email" autocomplete="email" maxlength="120" /></label>
           <label class="field"><span>{t.contact.form.location}</span><input id="f-location" name="location" autocomplete="address-level2" maxlength="80" placeholder={t.contact.form.locationPh} /></label>
           <fieldset class="field choice">
             <legend>{t.contact.form.who}</legend>

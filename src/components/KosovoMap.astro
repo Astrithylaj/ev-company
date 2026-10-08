@@ -9,12 +9,16 @@ const dots = data.dots.map(([x, y]) => {
   const d = Math.hypot(x - px, y - py) / maxD; // 0 at Prishtina, 1 at the farthest border
   return { x, y, d: Math.round(d * 1000) / 1000 };
 });
+const towns = (data.towns ?? []).map(([name, x, y]) => ({ name: String(name), x: Number(x), y: Number(y), d: Math.round((Math.hypot(Number(x) - px, Number(y) - py) / maxD) * 1000) / 1000 }));
 ---
 <figure class="kmap" data-kmap>
   <svg viewBox={`0 0 ${data.w} ${data.h}`} role="img" aria-label={label}>
     <path class="kmap__outline" d={data.outline} />
     <g class="kmap__dots">
       {dots.map((p) => <circle cx={p.x} cy={p.y} r="3.1" style={`--d:${p.d}`} />)}
+    </g>
+    <g class="kmap__towns" aria-hidden="true">
+      {towns.map((t) => <circle class="kmap__town" cx={t.x} cy={t.y} r="4.6" style={`--d:${t.d}`}><title>{t.name}</title></circle>)}
     </g>
     <g class="kmap__base" transform={`translate(${px} ${py})`}>
       <circle class="kmap__ring" r="14" />
