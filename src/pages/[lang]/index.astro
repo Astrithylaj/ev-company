@@ -29,7 +29,7 @@ const direct = !!formService.accessKey;
     </a>
     <nav class="site-nav" id="site-nav" data-nav>
       <a href={`#${ids.services}`}>{t.nav.services}</a>
-      <a href={`#${ids.projects}`} data-nav-projects hidden={!showProjects}>{t.nav.projects}</a>
+      {showProjects && <a href={`#${ids.projects}`}>{t.nav.projects}</a>}
       <a href={`#${ids.process}`}>{t.nav.process}</a>
       <a href={`#${ids.company}`}>{t.nav.company}</a>
       <a href={`#${ids.contact}`}>{t.nav.contact}</a>
@@ -73,6 +73,7 @@ const direct = !!formService.accessKey;
             </a>
             <a class="text-link" href={`#${ids.services}`}>{t.hero.secondary}</a>
           </div>
+          <p class="hero__phone">{t.hero.phoneLead} <a href={contact.phoneHref} data-c-phone>{contact.phoneDisplay}</a></p>
         </div>
         <div class="hero__cable" aria-hidden="true"><span></span></div>
       </div>
@@ -174,6 +175,7 @@ const direct = !!formService.accessKey;
           <label class="field"><span>{t.contact.form.phone}</span><input id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="30" required /></label>
           <label class="field"><span>{t.contact.form.email}</span><input id="f-email" name="email" type="email" inputmode="email" autocomplete="email" maxlength="120" /></label>
           <label class="field"><span>{t.contact.form.location}</span><input id="f-location" name="location" autocomplete="address-level2" maxlength="80" placeholder={t.contact.form.locationPh} /></label>
+          <label class="field"><span>{t.contact.form.message}</span><textarea id="f-message" name="message" rows="3" maxlength="1500" placeholder={t.contact.form.messagePh}></textarea></label>
           <fieldset class="field choice">
             <legend>{t.contact.form.who}</legend>
             <div class="choice__row">
@@ -189,7 +191,6 @@ const direct = !!formService.accessKey;
               <option value="other">{t.contact.form.other}</option>
             </select>
           </label>
-          <label class="field"><span>{t.contact.form.message}</span><textarea id="f-message" name="message" rows="3" maxlength="1500" placeholder={t.contact.form.messagePh}></textarea></label>
           <input class="qform__trap" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true" />
           <button class="btn btn--dark" type="submit">{direct ? t.contact.form.submitDirect : t.contact.form.submit}</button>
           <p class="qform__status" role="status" data-form-status></p>
@@ -205,7 +206,7 @@ const direct = !!formService.accessKey;
       <p class="footer__line">{t.footer.line}</p>
       <nav class="footer__nav" aria-label={t.menu}>
         <a href={`#${ids.services}`}>{t.nav.services}</a>
-        <a href={`#${ids.projects}`} data-nav-projects hidden={!showProjects}>{t.nav.projects}</a>
+        {showProjects && <a href={`#${ids.projects}`}>{t.nav.projects}</a>}
         <a href={`#${ids.process}`}>{t.nav.process}</a>
         <a href={`#${ids.company}`}>{t.nav.company}</a>
         <a href={`#${ids.contact}`}>{t.nav.contact}</a>
@@ -223,7 +224,6 @@ const direct = !!formService.accessKey;
         <a href={`/${lang}/${L.privacy.slug}/`}>{L.labels.privacy}</a>
         <a href={`/${lang}/${L.terms.slug}/`}>{L.labels.terms}</a>
       </nav>
-      <span class="footer__preview">{t.footer.preview}</span>
       <a href="#main">{t.footer.top}</a>
     </div>
   </footer>

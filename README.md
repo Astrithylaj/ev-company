@@ -84,7 +84,6 @@ Push to GitHub (`ev-company` repo) and Cloudflare rebuilds the live site in abou
       the absolute share-image URL, the sitemap, and removes the noindex tag.
 - [ ] Form: create a free Web3Forms key for info@evcompanyks.com (web3forms.com) and paste it as `accessKey` in
       `src/data/form.ts`. The button text and note switch to "send directly" by themselves. Send one test request.
-- [ ] Remove the "Parapamje për shqyrtim" badge in the footer (`footer.preview` in content.ts and its span in index.astro).
 - [ ] Hosting: Cloudflare Pages (free). Domain stays registered at Namecheap, DNS moves to Cloudflare (needed to serve the main address without www);
       copy the existing email (MX/TXT) records exactly.
 - [ ] After launch: Google Search Console (submit `sitemap-index.xml`), Google Business Profile, Cloudflare Web Analytics.

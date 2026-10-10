@@ -39,6 +39,7 @@ const sq = {
     title: ['Kur ndizen dritat,', 'duket puna jonë.'],
     lead: 'Zgjidhje për ndriçim publik dhe të brendshëm, instalime elektrike dhe mirëmbajtje për institucione, biznese dhe objekte banimi, oborre dhe parqe në gjithë Kosovën.',
     primary: 'Kontakti',
+    phoneLead: 'Ose na telefononi:',
     secondary: 'Shihni shërbimet',
     canvasLabel: 'Animacion 3D: një rrugë natën ku dritat e ndriçimit publik ndizen njëra pas tjetrës.',
   },
@@ -53,7 +54,7 @@ const sq = {
     ask: 'Kërkoni ofertë për këtë shërbim',
     list: [
       { id: 'ndricim', short: 'Ndriçim publik', title: 'Ndriçimi publik', text: 'Instalim dhe mirëmbajtje e ndriçimit publik, me montim të shtyllave dhe të pajisjeve të ndriçimit për rrugë, parqe dhe hapësira publike.', for: 'Komuna dhe institucione publike' },
-      { id: 'instalime', short: 'Instalime', title: 'Instalime elektrike dhe ndriçim i brendshëm', text: 'Realizojmë instalime elektrike dhe ndriçim të brendshëm e të jashtëm për objekte banimi dhe afariste, përfshirë shtëpi, banesa, zyra, lokale, oborre dhe hapësira të tjera.', points: ['Ndriçim LED dhe dekorativ.', 'Ndriçim për ambiente pune dhe banimi.'], for: 'Shtëpi, biznese dhe objekte publike' },
+      { id: 'instalime', short: 'Instalime & ndriçim', title: 'Instalime elektrike dhe ndriçim i brendshëm', text: 'Realizojmë instalime elektrike dhe ndriçim të brendshëm e të jashtëm për objekte banimi dhe afariste, përfshirë shtëpi, banesa, zyra, lokale, oborre dhe hapësira të tjera.', points: ['Ndriçim LED dhe dekorativ.', 'Ndriçim për ambiente pune dhe banimi.'], for: 'Shtëpi, biznese dhe objekte publike' },
       { id: 'solare', short: 'Solare', title: 'Sisteme solare dhe fotovoltaike', text: 'Instalim i sistemeve solare dhe fotovoltaike, sipas kërkesave të projektit dhe objektit.' },
       { id: 'smart', short: 'Smart Home', title: 'Sisteme Smart Home', text: 'Instalim i sistemeve Smart Home për shtëpi dhe banesa.', for: 'Shtëpi dhe banesa' },
       { id: 'mirembajtje', short: 'Mirëmbajtje', title: 'Mirëmbajtje dhe intervenime', text: 'Mirëmbajtje e instalimeve elektrike dhe intervenime në terren, për objekte publike, komerciale dhe private.' },
@@ -131,7 +132,6 @@ const sq = {
   footer: {
     line: 'Nga lidhja e parë, te drita e fundit.',
     rights: 'Të gjitha të drejtat e rezervuara.',
-    preview: 'Parapamje për shqyrtim',
     top: 'Kthehu lart',
   },
 };
@@ -153,6 +153,7 @@ const en: typeof sq = {
     title: ['When the lights come on,', 'our work shows.'],
     lead: 'Solutions for public and indoor lighting, electrical installations and maintenance for institutions, businesses, homes, yards and parks across Kosovo.',
     primary: 'Contact',
+    phoneLead: 'Or call us:',
     secondary: 'See our services',
     canvasLabel: '3D animation: a street at night where the street lights switch on one after another.',
   },
@@ -167,7 +168,7 @@ const en: typeof sq = {
     ask: 'Request a quote for this service',
     list: [
       { id: 'ndricim', short: 'Public lighting', title: 'Public lighting', text: 'Installation and maintenance of public lighting, including mounting light poles and fixtures for roads, parks and public spaces.', for: 'Municipalities and public institutions' },
-      { id: 'instalime', short: 'Installations', title: 'Electrical installations and indoor lighting', text: 'We carry out electrical installations and indoor and outdoor lighting for homes and commercial buildings, including houses, apartments, offices, shops and venues, yards and other spaces.', points: ['LED and decorative lighting.', 'Lighting for workplaces and homes.'], for: 'Homes, businesses and public buildings' },
+      { id: 'instalime', short: 'Wiring & lighting', title: 'Electrical installations and indoor lighting', text: 'We carry out electrical installations and indoor and outdoor lighting for homes and commercial buildings, including houses, apartments, offices, shops and venues, yards and other spaces.', points: ['LED and decorative lighting.', 'Lighting for workplaces and homes.'], for: 'Homes, businesses and public buildings' },
       { id: 'solare', short: 'Solar', title: 'Solar and photovoltaic systems', text: 'Installation of solar and photovoltaic systems, to the requirements of each project and building.' },
       { id: 'smart', short: 'Smart Home', title: 'Smart Home systems', text: 'Installation of Smart Home systems for houses and apartments.', for: 'Houses and apartments' },
       { id: 'mirembajtje', short: 'Maintenance', title: 'Maintenance and repairs', text: 'Maintenance of electrical installations and on-site repairs for public, commercial and private buildings.' },
@@ -245,7 +246,6 @@ const en: typeof sq = {
   footer: {
     line: 'From the first connection to the final light.',
     rights: 'All rights reserved.',
-    preview: 'Preview for review',
     top: 'Back to top',
   },
 };

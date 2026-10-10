@@ -222,6 +222,12 @@ html.intro .hero .hero__line, html.intro .hero .hero__lead, html.intro .hero .he
 .hero__actions {
   display: flex; flex-wrap: wrap; align-items: center; gap: 16px 28px; margin-top: clamp(24px, 4vh, 40px);
 }
+.hero__phone { margin-top: 18px; font-size: 1rem; color: var(--soft); }
+.hero__phone a { color: var(--text); font-weight: 650; text-decoration: none; font-variant-numeric: tabular-nums; }
+.hero__phone a:hover { color: var(--filament); }
+.hero.is-running .hero__phone { animation: rise 0.9s var(--ease-out) 2.2s both; }
+.js .hero__phone { opacity: 0; }
+.hero .hero__phone:focus-within { animation: none !important; opacity: 1 !important; }
 /* short screens (phones held sideways, small laptops): keep the headline clear of the header */
 @media (max-height: 520px) and (orientation: landscape) {
   .hero__content { bottom: 22px; }
@@ -276,6 +282,10 @@ html.intro .hero .hero__line, html.intro .hero .hero__lead, html.intro .hero .he
 }
 .city canvas { display: block; width: 100%; height: 100%; opacity: 0; transition: opacity 0.8s ease; }
 .city[data-ready] canvas { opacity: 1; }
+/* a still of the lit town shows until the 3D model is ready, then fades out underneath it */
+.city::after { content: ''; position: absolute; inset: 0; background: #000 url(/city-still.jpg) center / cover no-repeat; opacity: 0.55; transition: opacity 1.2s ease 0.4s; pointer-events: none; }
+.city[data-ready]::after { opacity: 0; }
+.city.is-fallback::after { display: none; }
 .city.is-fallback { display: none; }
 .panel {
   --rx: 0deg; --ry: 0deg;
@@ -647,7 +657,6 @@ html.intro .hero .hero__line, html.intro .hero .hero__lead, html.intro .hero .he
   background: linear-gradient(var(--line), var(--line)) var(--pad) 0 / calc(100% - 2 * var(--pad)) 1px no-repeat;
 }
 .footer__base a { color: var(--soft); }
-.footer__preview { color: var(--filament); border: 1px dashed rgba(255, 210, 74, 0.5); border-radius: 4px; padding: 2px 8px; }
 @media (max-width: 860px) { .footer__grid { grid-template-columns: 1fr 1fr; } .footer__line { grid-column: 1 / -1; } }
 
 /* "All services" list inside the readout */
