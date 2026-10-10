@@ -80,7 +80,7 @@ Push to GitHub (`ev-company` repo) and Cloudflare rebuilds the live site in abou
 - [ ] Original logo files (SVG/AI/PDF) replace the vectorised ones in `public/`.
 - [ ] Real projects and photos (see above), social links, Viber only if confirmed.
 - [ ] Legal pages: company NUI filled in `src/data/legal.ts`; Ermal confirms the details (24-month retention, form service).
-- [ ] Domain confirmed: set `SITE` in `astro.config.mjs`. This alone switches on canonical and language links,
+- [x] Domain confirmed: `SITE` set in `astro.config.mjs`. This alone switches on canonical and language links,
       the absolute share-image URL, the sitemap, and removes the noindex tag.
 - [ ] Form: create a free Web3Forms key for info@evcompanyks.com (web3forms.com) and paste it as `accessKey` in
       `src/data/form.ts`. The button text and note switch to "send directly" by themselves. Send one test request.

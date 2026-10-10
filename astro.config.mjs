@@ -3,7 +3,7 @@ import sitemap from '@astrojs/sitemap';
 
 // LAUNCH: set SITE to the confirmed domain, e.g. 'https://evcompanyks.com'.
 // That switches on absolute canonical/language links, the share image URL, the sitemap and indexing (see Base.astro).
-const SITE = undefined;
+const SITE = 'https://evcompanyks.com';
 
 export default defineConfig({
   site: SITE,
