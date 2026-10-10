@@ -21,6 +21,11 @@ const site = defaultContent();
 const projList = visibleProjects(site).length ? visibleProjects(site) : import.meta.env.DEV ? exampleProjects.map((p) => ({ ...p, visible: true })) : [];
 const showProjects = projList.length > 0;
 const direct = !!formService.accessKey;
+// Drone photos/clips shown inside the service readouts (preview of the media plan).
+const serviceMedia: Record<string, { img?: string; video?: string; poster?: string; alt: string }> = {
+  ndricim: { img: '/media/p0108.webp', alt: lang === 'sq' ? 'Bulevard i ndriçuar natën, pamje nga droni' : 'Lit boulevard at night, drone view' },
+  platforme: { video: '/media/van-0083.mp4', poster: '/media/van-0083.jpg', alt: lang === 'sq' ? 'Auto-platforma e EV COMPANY në parking natën' : 'EV COMPANY cherry-picker van in a car park at night' },
+};
 ---
 <Base lang={lang} intro>
   <header class="site-header" data-header>
@@ -59,6 +64,7 @@ const direct = !!formService.accessKey;
     <!-- HERO -->
     <section class="hero" data-hero>
       <div class="hero__stage">
+        <video class="hero__video" muted loop playsinline preload="none" poster="/media/og-drone.jpg" aria-hidden="true" data-hero-video><source data-src="/media/hero-0089.webm" type="video/webm" /><source data-src="/media/hero-0089.mp4" type="video/mp4" /></video>
         <canvas class="hero__canvas" role="img" aria-label={t.hero.canvasLabel} data-hero-canvas></canvas>
         <div class="hero__shade" aria-hidden="true"></div>
         <div class="hero__content wrap" data-hero-content>
@@ -86,7 +92,7 @@ const direct = !!formService.accessKey;
           <h2 class="h2">{t.services.title}</h2>
           <p class="section-head__lead">{t.services.lead}</p>
         </div>
-        <Panel services={t.services.list} all={t.services.all} label={t.services.panelLabel} hint={t.services.hint} forLabel={t.services.forLabel} ask={t.services.ask} cityLabel={t.services.cityLabel} />
+        <Panel services={t.services.list} all={t.services.all} label={t.services.panelLabel} hint={t.services.hint} forLabel={t.services.forLabel} ask={t.services.ask} cityLabel={t.services.cityLabel} media={serviceMedia} />
       </div>
     </section>
 

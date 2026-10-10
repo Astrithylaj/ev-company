@@ -56,9 +56,10 @@ export function renderProjects(lang: Lang, list: Project[], ids = { section: 'pr
   const svc = (sid: string) => t.services.list.find((s) => s.id === sid)?.short ?? sid;
   const cards = list.map((p) => {
     const x = pick(p, lang);
-    const n = p.photos.length;
+    const vid = p.video ? `<video${p.poster ? ` poster="${esc(p.poster)}"` : ''} muted loop playsinline preload="none" aria-label="${esc(`${x.title}, ${x.place}`)}" data-lazy-video><source src="${esc(p.video.replace(/\.mp4$/, '.webm'))}" type="video/webm" /><source src="${esc(p.video)}" type="video/mp4" /></video>` : '';
+    const n = p.photos.length + (p.video ? 1 : 0);
     const imgs = n
-      ? p.photos.map((f, i) => `<img src="${esc(photoSrc(f))}" alt="${esc(`${x.title}, ${x.place} (${i + 1}/${n})`)}" loading="lazy" decoding="async" width="1600" height="1200" />`).join('')
+      ? vid + p.photos.map((f, i) => `<img src="${esc(photoSrc(f))}" alt="${esc(`${x.title}, ${x.place} (${i + 1}/${n})`)}" loading="lazy" decoding="async" width="1600" height="1200" />`).join('')
       : `<div class="project__ph" aria-hidden="true"><span>[PLACEHOLDER: foto]</span></div>`;
     const meta = [x.place, p.year].filter(Boolean).map(esc).join(', ');
     return `<li class="project">

@@ -14,6 +14,7 @@ export function boot() {
   mobileBar();
   contactSwitch();
   form();
+  lazyVideos();
 
   let ticking = false;
   const onScroll = () => {
@@ -54,6 +55,17 @@ function menu() {
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && document.body.classList.contains('menu-open')) { set(false); btn.focus(); } });
 }
 
+/* ---------- Muted clips: play only while on screen ---------- */
+function lazyVideos() {
+  const vids = document.querySelectorAll<HTMLVideoElement>('[data-lazy-video]');
+  if (!vids.length) return;
+  const io = new IntersectionObserver((es) => es.forEach((e) => {
+    const v = e.target as HTMLVideoElement;
+    if (e.isIntersecting) { if (v.preload === 'none') v.preload = 'auto'; v.play().catch(() => {}); } else v.pause();
+  }), { rootMargin: '120px' });
+  vids.forEach((v) => io.observe(v));
+}
+
 /* ---------- Hero ---------- */
 function heroSetup() {
   const section = document.querySelector<HTMLElement>('[data-hero]');
@@ -75,12 +87,28 @@ function heroSetup() {
   const nav = navigator as Navigator & { deviceMemory?: number; connection?: { saveData?: boolean } };
   const weak = (nav.deviceMemory !== undefined && nav.deviceMemory <= 2) || (navigator.hardwareConcurrency || 8) <= 2 || !!nav.connection?.saveData;
   if (weak) { section.classList.add('no-webgl'); start(); return update; }
+  // Desktop: the real drone footage replaces the 3D street. Phones keep the lighter 3D/still.
+  const video = section.querySelector<HTMLVideoElement>('[data-hero-video]');
+  const wantVideo = !!video && !reduced && window.matchMedia('(min-width: 900px) and (hover: hover)').matches;
+  if (wantVideo && video) {
+    video.querySelectorAll<HTMLSourceElement>('source[data-src]').forEach((s) => { s.src = s.dataset.src || ''; });
+    video.load();
+    section.classList.add('has-video');
+    const ok = () => { window.clearTimeout(fallback); start(); };
+    video.addEventListener('playing', ok, { once: true });
+    video.play().catch(() => { section.classList.remove('has-video'); video.removeAttribute('src'); video.load(); boot3d(); });
+    video.addEventListener('error', () => { if (!started) { section.classList.remove('has-video'); boot3d(); } }, { once: true });
+    return update;
+  }
+  boot3d();
+  function boot3d() {
   import('./hero3d').then(({ initHero }) => {
     handle = initHero(canvas, reduced, () => { window.clearTimeout(fallback); start(); });
     if (!handle) { section.classList.add('no-webgl'); start(); return; }
     section.classList.add('has-webgl');
     update();
-  }).catch(() => { section.classList.add('no-webgl'); start(); });
+  }).catch(() => { section!.classList.add('no-webgl'); start(); });
+  }
 
   function update() {
     const r = section!.getBoundingClientRect();

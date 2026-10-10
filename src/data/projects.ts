@@ -10,7 +10,9 @@
 
 export type Project = {
   id: string;
-  photos: string[];          // file names in /public/projects/
+  photos: string[];          // file names in /public/projects/ (or a full path starting with /)
+  video?: string;            // optional short muted clip shown as the first slide
+  poster?: string;
   year?: string;
   services: string[];        // service ids
   sq: { title: string; place: string; client: string; text: string };
@@ -18,6 +20,31 @@ export type Project = {
 };
 
 export const projects: Project[] = [
+  // PREVIEW ONLY — drone material from 11 Oct 2026. Titles/places/years are placeholders until Ermal confirms the facts.
+  {
+    id: 'bulevardi-2026',
+    photos: ['/media/p0104.webp', '/media/p0107.webp', '/media/p0092.webp', '/media/p0095.webp'],
+    year: '[PLACEHOLDER: viti]',
+    services: ['ndricim'],
+    sq: { title: '[PLACEHOLDER: Ndriçimi publik i bulevardit]', place: '[PLACEHOLDER: Komuna]', client: '[PLACEHOLDER: Klienti]', text: '[PLACEHOLDER: sa shtylla / km, çfarë u bë, me 1–2 fjali.]' },
+    en: { title: '[PLACEHOLDER: Public lighting, boulevard]', place: '[PLACEHOLDER: Municipality]', client: '[PLACEHOLDER: Client]', text: '[PLACEHOLDER: how many poles / km, what was done.]' },
+  },
+  {
+    id: 'parkingu-autobuseve',
+    photos: [], video: '/media/park-0080.mp4', poster: '/media/park-0080.jpg',
+    year: '[PLACEHOLDER: viti]',
+    services: ['ndricim', 'instalime'],
+    sq: { title: '[PLACEHOLDER: Ndriçimi i parkingut të autobusëve]', place: '[PLACEHOLDER: Qyteti]', client: '[PLACEHOLDER: Klienti]', text: '[PLACEHOLDER: çfarë u bë.]' },
+    en: { title: '[PLACEHOLDER: Bus terminal car park lighting]', place: '[PLACEHOLDER: Town]', client: '[PLACEHOLDER: Client]', text: '[PLACEHOLDER: what was done.]' },
+  },
+  {
+    id: 'rruga-2026',
+    photos: [], video: '/media/street-0079.mp4', poster: '/media/street-0079.jpg',
+    year: '[PLACEHOLDER: viti]',
+    services: ['ndricim', 'platforme'],
+    sq: { title: '[PLACEHOLDER: Ndriçimi i rrugës]', place: '[PLACEHOLDER: Qyteti]', client: '[PLACEHOLDER: Klienti]', text: '[PLACEHOLDER: çfarë u bë.]' },
+    en: { title: '[PLACEHOLDER: Street lighting]', place: '[PLACEHOLDER: Town]', client: '[PLACEHOLDER: Client]', text: '[PLACEHOLDER: what was done.]' },
+  },
   // {
   //   id: 'ndricimi-rruga-x',
   //   photos: ['rruga-x-1.jpg', 'rruga-x-2.jpg'],
