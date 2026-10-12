@@ -15,6 +15,7 @@ export function boot() {
   contactSwitch();
   form();
   lazyVideos();
+  inPageLinks();
 
   let ticking = false;
   const onScroll = () => {
@@ -64,6 +65,32 @@ function lazyVideos() {
     if (e.isIntersecting) { if (v.preload === 'none') v.preload = 'auto'; v.play().catch(() => {}); } else v.pause();
   }), { rootMargin: '120px' });
   vids.forEach((v) => io.observe(v));
+}
+
+/* ---------- In-page links (#kontakti etc.) ----------
+   The browser's own smooth scroll is unreliable on phones: a long scroll can be cut short by a touch,
+   and starting it while the menu is still closing (body overflow hidden) sometimes goes nowhere.
+   So: close the menu first, then scroll ourselves. Short hops stay smooth; long ones jump straight there. */
+function inPageLinks() {
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  document.addEventListener('click', (e) => {
+    const a = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[href^="#"]');
+    if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey) return;
+    const id = a.getAttribute('href')!.slice(1);
+    const target = id && document.getElementById(id);
+    if (!target) return;
+    e.preventDefault();
+    const go = () => {
+      const offset = (header?.offsetHeight || 80) + 8;
+      const top = target.getBoundingClientRect().top + window.scrollY - offset;
+      const far = Math.abs(top - window.scrollY) > window.innerHeight * 1.5;
+      window.scrollTo({ top, behavior: reduced || far ? ('instant' as ScrollBehavior) : 'smooth' });
+      history.replaceState(null, '', `#${id}`);
+    };
+    // let the menu close and the page regain its scroll before we move
+    if (document.body.classList.contains('menu-open')) requestAnimationFrame(() => requestAnimationFrame(go));
+    else go();
+  });
 }
 
 /* ---------- Hero ---------- */
