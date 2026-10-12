@@ -704,7 +704,7 @@ html.intro .hero .hero__line, html.intro .hero .hero__lead, html.intro .hero .he
 .mobilebar { display: none; }
 @media (max-width: 900px) {
   .mobilebar {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 8px; position: fixed; left: 0; right: 0; bottom: 0; z-index: 45;
+    display: grid; grid-template-columns: 1fr 56px; gap: 8px; position: fixed; left: 0; right: 0; bottom: 0; z-index: 45;
     padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
     background: rgba(0, 0, 0, 0.86); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
     box-shadow: 0 -1px 0 var(--line); transform: translateY(110%); transition: transform 0.35s var(--ease-out);
@@ -712,8 +712,8 @@ html.intro .hero .hero__line, html.intro .hero .hero__lead, html.intro .hero .he
   .mobilebar.is-on { transform: none; }
   .menu-open .mobilebar, html.intro .mobilebar { transform: translateY(110%); }
   .mobilebar a { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; border-radius: 6px; font-weight: 650; text-decoration: none; }
-  .mobilebar__call { background: var(--light); color: #000; }
-  .mobilebar__quote { border: 1px solid rgba(255, 255, 255, 0.25); color: var(--text); }
+  .mobilebar__quote { background: var(--light); color: #000; }
+  .mobilebar__call { border: 1px solid rgba(255, 255, 255, 0.25); color: var(--text); padding: 0; }
   .footer { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
 }
 
@@ -768,15 +768,15 @@ html.intro .hero .hero__line, html.intro .hero .hero__lead, html.intro .hero .he
 .footer__contact .social span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .mobilebar__slot { display: contents; }
 @media (max-width: 900px) {
-  .mobilebar:has(.mobilebar__chat) { grid-template-columns: 1fr 1fr 56px; }
+  .mobilebar:has(.mobilebar__chat) { grid-template-columns: 1fr 56px 56px; }
   .mobilebar a.mobilebar__chat { background: #25d366; color: #04140a; padding: 0; }
   .mobilebar a { white-space: nowrap; }
 }
 @media (max-width: 374px) {
   .mobilebar { gap: 6px; padding-inline: 12px; }
-  .mobilebar:has(.mobilebar__chat) { grid-template-columns: 1fr 1fr 48px; }
+  .mobilebar { grid-template-columns: 1fr 48px; }
+  .mobilebar:has(.mobilebar__chat) { grid-template-columns: 1fr 48px 48px; }
   .mobilebar a { font-size: 0.9rem; gap: 6px; }
-  .mobilebar__call svg { display: none; }
 }
 
 /* ---------- 404 ---------- */
