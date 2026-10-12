@@ -148,6 +148,9 @@ button, input, select, textarea { font: inherit; color: inherit; }
   }
   .site-nav .site-nav__phone { display: block; color: var(--filament); border-bottom: 0; margin-top: 12px; font-size: 1.4rem; }
   .menu-open { overflow: hidden; }
+  /* backdrop-filter on the header would turn it into the containing block of the fixed menu (so the
+     menu would collapse to the header's 72px once the header is solid) - drop it while the menu is open */
+  .menu-open .site-header { background: #000; -webkit-backdrop-filter: none; backdrop-filter: none; }
 }
 
 /* ---------- Intro (first visit per session) ---------- */
