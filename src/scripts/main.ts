@@ -15,6 +15,7 @@ export function boot() {
   contactSwitch();
   form();
   lazyVideos();
+  lightbox();
   inPageLinks();
 
   let ticking = false;
@@ -65,6 +66,57 @@ function lazyVideos() {
     if (e.isIntersecting) { if (v.preload === 'none') v.preload = 'auto'; v.play().catch(() => {}); } else v.pause();
   }), { rootMargin: '120px' });
   vids.forEach((v) => io.observe(v));
+}
+
+/* ---------- Project photos open full screen (arrows, swipe, Esc) ---------- */
+function lightbox() {
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-lightbox]'));
+  if (!links.length || typeof HTMLDialogElement === 'undefined') return;
+  const en = document.documentElement.lang === 'en';
+  const icon = (d: string) => `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
+  const dlg = document.createElement('dialog');
+  dlg.className = 'lightbox';
+  dlg.innerHTML = `<img class="lightbox__img" alt="" />
+    <button type="button" class="lightbox__btn lightbox__close" aria-label="${en ? 'Close' : 'Mbyll'}">${icon('M6 6l12 12M18 6L6 18')}</button>
+    <button type="button" class="lightbox__btn lightbox__prev" aria-label="${en ? 'Previous photo' : 'Foto e mëparshme'}">${icon('M15 5l-7 7 7 7')}</button>
+    <button type="button" class="lightbox__btn lightbox__next" aria-label="${en ? 'Next photo' : 'Foto tjetër'}">${icon('M9 5l7 7-7 7')}</button>
+    <p class="lightbox__count" aria-live="polite"></p>`;
+  document.body.appendChild(dlg);
+  const img = dlg.querySelector<HTMLImageElement>('.lightbox__img')!;
+  const count = dlg.querySelector<HTMLElement>('.lightbox__count')!;
+  let group: HTMLAnchorElement[] = [];
+  let i = 0;
+  const show = (n: number) => {
+    i = (n + group.length) % group.length;
+    const a = group[i];
+    img.src = a.href;
+    img.alt = a.querySelector('img')?.alt || '';
+    count.textContent = `${i + 1} / ${group.length}`;
+  };
+  const close = () => dlg.close();
+  dlg.addEventListener('close', () => { document.documentElement.classList.remove('lightbox-open'); group[i]?.focus({ preventScroll: true }); });
+  links.forEach((a) => a.addEventListener('click', (e) => {
+    e.preventDefault();
+    group = Array.from(a.closest('.project__gallery')?.querySelectorAll<HTMLAnchorElement>('[data-lightbox]') || [a]);
+    dlg.toggleAttribute('data-single', group.length < 2);
+    show(group.indexOf(a));
+    document.documentElement.classList.add('lightbox-open');
+    dlg.showModal();
+  }));
+  dlg.querySelector('.lightbox__close')!.addEventListener('click', close);
+  dlg.querySelector('.lightbox__prev')!.addEventListener('click', () => show(i - 1));
+  dlg.querySelector('.lightbox__next')!.addEventListener('click', () => show(i + 1));
+  dlg.addEventListener('click', (e) => { if (e.target === dlg) close(); });
+  dlg.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') show(i - 1);
+    if (e.key === 'ArrowRight') show(i + 1);
+  });
+  let x0 = 0;
+  dlg.addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; }, { passive: true });
+  dlg.addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 50 && group.length > 1) show(i + (dx < 0 ? 1 : -1));
+  });
 }
 
 /* ---------- In-page links (#kontakti etc.) ----------

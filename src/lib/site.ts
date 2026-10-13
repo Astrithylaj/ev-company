@@ -54,23 +54,30 @@ export function renderProjects(lang: Lang, list: Project[], ids = { section: 'pr
   if (!list.length) return '';
   const t = content[lang];
   const svc = (sid: string) => t.services.list.find((s) => s.id === sid)?.short ?? sid;
-  const cards = list.map((p) => {
+  const rows = list.map((p) => {
     const x = pick(p, lang);
-    const vid = p.video ? `<video${p.poster ? ` poster="${esc(p.poster)}"` : ''} muted loop playsinline preload="none" aria-label="${esc(`${x.title}, ${x.place}`)}" data-lazy-video><source src="${esc(p.video.replace(/\.mp4$/, '.webm'))}" type="video/webm" /><source src="${esc(p.video)}" type="video/mp4" /></video>` : '';
-    const n = p.photos.length + (p.video ? 1 : 0);
-    const imgs = n
-      ? vid + p.photos.map((f, i) => `<img src="${esc(photoSrc(f))}" alt="${esc(`${x.title}, ${x.place} (${i + 1}/${n})`)}" loading="lazy" decoding="async" width="1600" height="1200" />`).join('')
-      : `<div class="project__ph" aria-hidden="true"><span>[PLACEHOLDER: foto]</span></div>`;
+    const label = [x.title, x.place].filter(Boolean).join(', ');
+    // the film: the project's video, or its first photo when there is no video
+    const film = p.video
+      ? `<figure class="project__film"><video${p.poster ? ` poster="${esc(p.poster)}"` : ''} muted loop playsinline preload="none" aria-label="${esc(label)}" data-lazy-video><source src="${esc(p.video.replace(/\.mp4$/, '.webm'))}" type="video/webm" /><source src="${esc(p.video)}" type="video/mp4" /></video></figure>`
+      : p.photos[0]
+        ? `<figure class="project__film"><img src="${esc(photoSrc(p.photos[0]))}" alt="${esc(label)}" loading="lazy" decoding="async" width="2000" height="1125" /></figure>`
+        : '';
+    // every other photo is shown in the grid under it, all visible; a tap opens it full screen
+    const rest = p.video ? p.photos : p.photos.slice(1);
+    const gallery = rest.length
+      ? `<ul class="project__gallery">${rest.map((f, i) => `<li><a href="${esc(photoSrc(f))}" data-lightbox aria-label="${esc(`${t.projects.open}: ${x.title} (${i + 1}/${rest.length})`)}"><img src="${esc(photoSrc(f))}" alt="${esc(`${label} (${i + 1}/${rest.length})`)}" loading="lazy" decoding="async" width="2000" height="1125" /></a></li>`).join('')}</ul>`
+      : '';
     const meta = [x.place, p.year].filter(Boolean).map(esc).join(', ');
     return `<li class="project">
-  <div class="project__photos"${n > 1 ? ` tabindex="0" aria-label="${esc(`${x.title}: ${n} ${t.projects.photos}`)}"` : ''}>${imgs}</div>
-  ${n > 1 ? `<span class="project__count" aria-hidden="true">${p.video ? `Video + ${p.photos.length}` : n} ${esc(t.projects.photos)}</span>` : ''}
+  ${film}
   <div class="project__body">
     <h3 class="project__title">${esc(x.title)}</h3>
     <p class="project__meta">${meta}${x.client ? `<span>${esc(x.client)}</span>` : ''}</p>
     ${x.text ? `<p class="project__text">${esc(x.text)}</p>` : ''}
     ${p.services.length ? `<ul class="project__tags">${p.services.map((s) => `<li>${esc(svc(s))}</li>`).join('')}</ul>` : ''}
   </div>
+  ${gallery}
 </li>`;
   }).join('\n');
   return `<section class="projects" id="${ids.section}">
@@ -79,8 +86,8 @@ export function renderProjects(lang: Lang, list: Project[], ids = { section: 'pr
       <h2 class="h2">${esc(t.projects.title)}</h2>
       <p class="section-head__lead">${esc(t.projects.lead)}</p>
     </div>
-    <ul class="projects__grid${list.length >= 3 ? ' projects__grid--feature' : ''}">
-${cards}
+    <ul class="projects__list">
+${rows}
     </ul>
   </div>
 </section>`;
