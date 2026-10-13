@@ -2,7 +2,7 @@
 // Edit the data files in src/data/ to change them.
 
 import { content, contact as baseContact, type Lang } from '../data/content';
-import { projects as baseProjects, type Project as BaseProject } from '../data/projects';
+import { projects as baseProjects, type Project as BaseProject, type Photo } from '../data/projects';
 
 export type Project = BaseProject & { visible: boolean };
 
@@ -38,7 +38,8 @@ export const esc = (v: string) =>
 export const telHref = (phone: string) => `tel:${digitsPlus(phone)}`;
 export const mapsHref = (street: string, city: string) =>
   `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${street} ${city}`)}`;
-export const photoSrc = (f: string) => (f.startsWith('/') ? f : `/projects/${f}`);
+export const photoSrc = (f: string | Photo) => { const src = typeof f === 'string' ? f : f.src; return src.startsWith('/') ? src : `/projects/${src}`; };
+const photoSize = (f: string | Photo) => (typeof f === 'string' ? { w: 1600, h: 900 } : { w: f.w, h: f.h });
 const pick = (p: Project, lang: Lang) => {
   const t = p[lang], s = p.sq;
   return { title: t.title || s.title, place: t.place || s.place, client: t.client || s.client, text: t.text || s.text };
@@ -61,12 +62,12 @@ export function renderProjects(lang: Lang, list: Project[], ids = { section: 'pr
     const film = p.video
       ? `<figure class="project__film"><video${p.poster ? ` poster="${esc(p.poster)}"` : ''} muted loop playsinline preload="none" aria-label="${esc(label)}" data-lazy-video><source src="${esc(p.video.replace(/\.mp4$/, '.webm'))}" type="video/webm" /><source src="${esc(p.video)}" type="video/mp4" /></video></figure>`
       : p.photos[0]
-        ? `<figure class="project__film"><img src="${esc(photoSrc(p.photos[0]))}" alt="${esc(label)}" loading="lazy" decoding="async" width="2000" height="1125" /></figure>`
+        ? `<figure class="project__film"><img src="${esc(photoSrc(p.photos[0]))}" alt="${esc(label)}" loading="lazy" decoding="async" width="${photoSize(p.photos[0]).w}" height="${photoSize(p.photos[0]).h}" /></figure>`
         : '';
     // every other photo is shown in the grid under it, all visible; a tap opens it full screen
     const rest = p.video ? p.photos : p.photos.slice(1);
     const gallery = rest.length
-      ? `<ul class="project__gallery">${rest.map((f, i) => `<li><a href="${esc(photoSrc(f))}" data-lightbox aria-label="${esc(`${t.projects.open}: ${x.title} (${i + 1}/${rest.length})`)}"><img src="${esc(photoSrc(f))}" alt="${esc(`${label} (${i + 1}/${rest.length})`)}" loading="lazy" decoding="async" width="2000" height="1125" /></a></li>`).join('')}</ul>`
+      ? `<ul class="project__gallery">${rest.map((f, i) => `<li style="--r:${(photoSize(f).w / photoSize(f).h).toFixed(4)}"><a href="${esc(photoSrc(f))}" data-lightbox aria-label="${esc(`${t.projects.open}: ${x.title} (${i + 1}/${rest.length})`)}"><img src="${esc(photoSrc(f))}" alt="${esc(`${label} (${i + 1}/${rest.length})`)}" loading="lazy" decoding="async" width="${photoSize(f).w}" height="${photoSize(f).h}" /></a></li>`).join('')}</ul>`
       : '';
     const meta = [x.place, p.year].filter(Boolean).map(esc).join(', ');
     return `<li class="project">

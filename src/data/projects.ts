@@ -8,9 +8,11 @@
 //
 // Only real, approved projects. If the client can't be named, describe it ("Shkollë fillore", "Hotel në Pejë").
 
+export type Photo = { src: string; w: number; h: number };
+
 export type Project = {
   id: string;
-  photos: string[];          // file names in /public/projects/ (or a full path starting with /)
+  photos: (string | Photo)[]; // file names in /public/projects/ (or a full path starting with /); give w/h when known
   video?: string;            // optional short muted clip shown as the first slide
   poster?: string;
   year?: string;
@@ -24,7 +26,19 @@ export const projects: Project[] = [
   // the texts only describe what the footage shows.
   {
     id: 'bulevardi-2026',
-    photos: ['/media/p0104.webp', '/media/p0107.webp', '/media/p0092.webp', '/media/p0095.webp'],
+    photos: [
+      { src: '/media/bulevardi-01.webp', w: 1672, h: 941 },
+      { src: '/media/bulevardi-02.webp', w: 941, h: 1672 },
+      { src: '/media/bulevardi-03.webp', w: 1672, h: 941 },
+      { src: '/media/bulevardi-04.webp', w: 941, h: 1672 },
+      { src: '/media/bulevardi-05.webp', w: 1672, h: 941 },
+      { src: '/media/bulevardi-06.webp', w: 941, h: 1672 },
+      { src: '/media/bulevardi-07.webp', w: 1672, h: 941 },
+      { src: '/media/bulevardi-08.webp', w: 941, h: 1672 },
+      { src: '/media/bulevardi-09.webp', w: 1672, h: 941 },
+      { src: '/media/bulevardi-10.webp', w: 941, h: 1672 },
+      { src: '/media/bulevardi-11.webp', w: 1672, h: 941 },
+    ],
     video: '/media/web3.mp4', poster: '/media/web3.jpg',
     services: ['ndricim'],
     sq: { title: 'Ndriçimi publik i një bulevardi', place: 'Kosovë', client: '', text: 'Shtylla dhe ndriçues LED përgjatë gjithë bulevardit, me ndriçim të njëtrajtshëm nga njëri skaj në tjetrin, pamje nga droni natën.' },
