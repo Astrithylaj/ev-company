@@ -14,6 +14,8 @@ export function boot() {
   mobileBar();
   contactSwitch();
   form();
+  lazyVideos();
+  lightbox();
   inPageLinks();
 
   let ticking = false;
@@ -53,6 +55,72 @@ function menu() {
   btn.addEventListener('click', () => set(btn.getAttribute('aria-expanded') !== 'true'));
   nav.addEventListener('click', (e) => { if ((e.target as HTMLElement).closest('a')) set(false); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && document.body.classList.contains('menu-open')) { set(false); btn.focus(); } });
+}
+
+/* ---------- Muted clips: play only while on screen ---------- */
+function lazyVideos() {
+  const vids = document.querySelectorAll<HTMLVideoElement>('[data-lazy-video]');
+  if (!vids.length) return;
+  const io = new IntersectionObserver((es) => es.forEach((e) => {
+    const v = e.target as HTMLVideoElement;
+    if (e.isIntersecting) { if (v.preload === 'none') v.preload = 'auto'; v.play().catch(() => {}); } else v.pause();
+  }), { rootMargin: '120px' });
+  vids.forEach((v) => io.observe(v));
+}
+
+/* ---------- Project photos open full screen (arrows, swipe, Esc) ---------- */
+function lightbox() {
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-lightbox]'));
+  if (!links.length || typeof HTMLDialogElement === 'undefined') return;
+  const en = document.documentElement.lang === 'en';
+  const icon = (d: string) => `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
+  const dlg = document.createElement('dialog');
+  dlg.className = 'lightbox';
+  dlg.innerHTML = `<img class="lightbox__img" alt="" />
+    <button type="button" class="lightbox__btn lightbox__close" aria-label="${en ? 'Close' : 'Mbyll'}">${icon('M6 6l12 12M18 6L6 18')}</button>
+    <button type="button" class="lightbox__btn lightbox__prev" aria-label="${en ? 'Previous photo' : 'Foto e mëparshme'}">${icon('M15 5l-7 7 7 7')}</button>
+    <button type="button" class="lightbox__btn lightbox__next" aria-label="${en ? 'Next photo' : 'Foto tjetër'}">${icon('M9 5l7 7-7 7')}</button>
+    <p class="lightbox__count" aria-live="polite"></p>`;
+  document.body.appendChild(dlg);
+  const img = dlg.querySelector<HTMLImageElement>('.lightbox__img')!;
+  const count = dlg.querySelector<HTMLElement>('.lightbox__count')!;
+  let group: HTMLAnchorElement[] = [];
+  let i = 0;
+  const show = (n: number) => {
+    i = (n + group.length) % group.length;
+    const a = group[i];
+    img.src = a.href;
+    img.alt = a.querySelector('img')?.alt || '';
+    count.textContent = `${i + 1} / ${group.length}`;
+  };
+  const close = () => dlg.close();
+  dlg.addEventListener('close', () => { document.documentElement.classList.remove('lightbox-open'); group[i]?.focus({ preventScroll: true }); });
+  const open = (a: HTMLAnchorElement) => {
+    group = Array.from(a.closest('.project__gallery')?.querySelectorAll<HTMLAnchorElement>('[data-lightbox]') || [a]);
+    dlg.toggleAttribute('data-single', group.length < 2);
+    show(group.indexOf(a));
+    document.documentElement.classList.add('lightbox-open');
+    dlg.showModal();
+  };
+  links.forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); open(a); }));
+  document.querySelectorAll<HTMLButtonElement>('[data-lightbox-all]').forEach((b) => b.addEventListener('click', () => {
+    const first = b.closest('.project__photos')?.querySelector<HTMLAnchorElement>('[data-lightbox]');
+    if (first) open(first);
+  }));
+  dlg.querySelector('.lightbox__close')!.addEventListener('click', close);
+  dlg.querySelector('.lightbox__prev')!.addEventListener('click', () => show(i - 1));
+  dlg.querySelector('.lightbox__next')!.addEventListener('click', () => show(i + 1));
+  dlg.addEventListener('click', (e) => { if (e.target === dlg) close(); });
+  dlg.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') show(i - 1);
+    if (e.key === 'ArrowRight') show(i + 1);
+  });
+  let x0 = 0;
+  dlg.addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; }, { passive: true });
+  dlg.addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 50 && group.length > 1) show(i + (dx < 0 ? 1 : -1));
+  });
 }
 
 /* ---------- In-page links (#kontakti etc.) ----------
@@ -102,12 +170,49 @@ function heroSetup() {
   const nav = navigator as Navigator & { deviceMemory?: number; connection?: { saveData?: boolean } };
   const weak = (nav.deviceMemory !== undefined && nav.deviceMemory <= 2) || (navigator.hardwareConcurrency || 8) <= 2 || !!nav.connection?.saveData;
   if (weak) { section.classList.add('no-webgl'); start(); return update; }
+  // The drone film replaces the 3D street: landscape cut on wide screens, the vertical cut on phones.
+  // It plays for everyone (also with "reduce motion" on, e.g. Windows animation effects off); the pause button stops it.
+  const video = section.querySelector<HTMLVideoElement>('[data-hero-video]');
+  if (video) {
+    const portrait = window.matchMedia('(max-width: 900px) and (orientation: portrait)').matches;
+    const k = portrait ? 'p' : 'l';
+    video.poster = video.dataset[`poster${k.toUpperCase()}`] || '';
+    // landscape: pick the file that matches how many real pixels the hero covers (big / high-DPI screens get 1440p or 4K)
+    const d = video.dataset;
+    const conn = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
+    const slow = !!conn?.saveData || /(^|-)(2g|3g)$/.test(conn?.effectiveType || '');
+    const need = Math.max(window.innerWidth, window.innerHeight * 16 / 9) * (window.devicePixelRatio || 1);
+    const sources: [string, string][] = portrait
+      ? [['video/webm', d.pWebm || ''], ['video/mp4', d.pMp4 || '']]
+      : [['video/mp4', (!slow && need > 2700 ? d.lUhd : !slow && need > 2000 ? d.lHd : d.lSd) || '']];
+    for (const [type, url] of sources) {
+      const src = document.createElement('source'); src.type = type; src.src = url; video.appendChild(src);
+    }
+    section.classList.add('has-video');
+    const ok = () => { window.clearTimeout(fallback); start(); };
+    video.addEventListener('playing', ok, { once: true });
+    const pause = section.querySelector<HTMLButtonElement>('[data-hero-pause]');
+    if (pause) {
+      const sync = () => { const paused = video.paused; pause.classList.toggle('is-paused', paused); pause.setAttribute('aria-label', (paused ? pause.dataset.play : pause.dataset.pause) || ''); };
+      video.addEventListener('playing', () => { pause.hidden = false; sync(); });
+      video.addEventListener('pause', sync);
+      pause.addEventListener('click', () => { if (video.paused) video.play().catch(() => {}); else video.pause(); });
+    }
+    const giveUp = () => { if (started) return; section!.classList.remove('has-video'); video.replaceChildren(); video.removeAttribute('poster'); video.load(); boot3d(); };
+    video.addEventListener('error', giveUp, { once: true });
+    video.load();
+    video.play().catch(giveUp);
+    return update;
+  }
+  boot3d();
+  function boot3d() {
   import('./hero3d').then(({ initHero }) => {
     handle = initHero(canvas, reduced, () => { window.clearTimeout(fallback); start(); });
     if (!handle) { section.classList.add('no-webgl'); start(); return; }
     section.classList.add('has-webgl');
     update();
-  }).catch(() => { section.classList.add('no-webgl'); start(); });
+  }).catch(() => { section!.classList.add('no-webgl'); start(); });
+  }
 
   function update() {
     const r = section!.getBoundingClientRect();

@@ -42,6 +42,8 @@ const sq = {
     phoneLead: 'Ose na telefononi:',
     secondary: 'Shihni shërbimet',
     canvasLabel: 'Animacion 3D: një rrugë natën ku dritat e ndriçimit publik ndizen njëra pas tjetrës.',
+    videoPause: 'Ndalo videon',
+    videoPlay: 'Luaj videon',
   },
   services: {
     title: 'Shërbimet',
@@ -72,7 +74,7 @@ const sq = {
       ['Mirëmbajtja', 'Ofrojmë mirëmbajtje dhe intervenime për vazhdimësinë e funksionimit.'],
     ],
   },
-  projects: { title: 'Projektet tona', lead: 'Disa nga punët e realizuara.', photos: 'foto' },
+  projects: { title: 'Projektet tona', lead: 'Disa nga punët e realizuara.', photos: 'foto', open: 'Hap foton', all: 'Shiko të gjitha fotot' },
   company: {
     title: 'Kompania',
     p1: 'EV COMPANY sh.p.k. është ndërtuar mbi punën praktike në sektorin elektrik. Me vite kemi zgjeruar ekipin teknik dhe pajisjet, dhe sot realizojmë projekte të çdo madhësie, nga intervenimet e përditshme deri te ndriçimi publik.',
@@ -156,6 +158,8 @@ const en: typeof sq = {
     phoneLead: 'Or call us:',
     secondary: 'See our services',
     canvasLabel: '3D animation: a street at night where the street lights switch on one after another.',
+    videoPause: 'Pause video',
+    videoPlay: 'Play video',
   },
   services: {
     title: 'Services',
@@ -186,7 +190,7 @@ const en: typeof sq = {
       ['Maintenance', 'We provide maintenance and repairs to keep everything running.'],
     ],
   },
-  projects: { title: 'Our projects', lead: 'Some of the work we have delivered.', photos: 'photos' },
+  projects: { title: 'Our projects', lead: 'Some of the work we have delivered.', photos: 'photos', open: 'Open photo', all: 'See all photos' },
   company: {
     title: 'The company',
     p1: 'EV COMPANY sh.p.k. is built on hands-on work in the electrical sector. Over the years we have grown our technical team and equipment, and today we deliver projects of every size, from everyday repairs to public lighting.',

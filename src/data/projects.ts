@@ -8,9 +8,14 @@
 //
 // Only real, approved projects. If the client can't be named, describe it ("Shkollë fillore", "Hotel në Pejë").
 
+export type Photo = { src: string; w: number; h: number };
+
 export type Project = {
   id: string;
-  photos: string[];          // file names in /public/projects/
+  photos: (string | Photo)[]; // file names in /public/projects/ (or a full path starting with /); give w/h when known
+  video?: string;            // optional muted clip shown large next to the text
+  mosaic?: boolean;          // first 5 photos shown as a fixed mosaic: portrait, landscape, portrait, landscape, landscape; the rest open from 'see all'
+  poster?: string;
   year?: string;
   services: string[];        // service ids
   sq: { title: string; place: string; client: string; text: string };
@@ -18,14 +23,36 @@ export type Project = {
 };
 
 export const projects: Project[] = [
-  // {
-  //   id: 'ndricimi-rruga-x',
-  //   photos: ['rruga-x-1.jpg', 'rruga-x-2.jpg'],
-  //   year: '2025',
-  //   services: ['ndricim', 'platforme'],
-  //   sq: { title: 'Ndriçimi i rrugës X', place: 'Prishtinë', client: 'Komuna e Prishtinës', text: 'Montim i 40 shtyllave LED dhe kabllimi nëntokësor.' },
-  //   en: { title: 'Street lighting, X Street', place: 'Prishtina', client: 'Municipality of Prishtina', text: 'Installed 40 LED poles and underground cabling.' },
-  // },
+  // Drone material from October 2026. Place/client/year are left out on purpose until the client confirms them;
+  // the texts only describe what the footage shows.
+  {
+    id: 'bulevardi-2026',
+    mosaic: true,
+    photos: [
+      { src: '/media/bulevardi-02.webp', w: 941, h: 1672 },
+      { src: '/media/bulevardi-09.webp', w: 1672, h: 941 },
+      { src: '/media/bulevardi-10.webp', w: 941, h: 1672 },
+      { src: '/media/bulevardi-01.webp', w: 1672, h: 941 },
+      { src: '/media/bulevardi-07.webp', w: 1672, h: 941 },
+      { src: '/media/bulevardi-03.webp', w: 1672, h: 941 },
+      { src: '/media/bulevardi-04.webp', w: 941, h: 1672 },
+      { src: '/media/bulevardi-05.webp', w: 1672, h: 941 },
+      { src: '/media/bulevardi-06.webp', w: 941, h: 1672 },
+      { src: '/media/bulevardi-08.webp', w: 941, h: 1672 },
+      { src: '/media/bulevardi-11.webp', w: 1672, h: 941 },
+    ],
+    video: '/media/web3.mp4', poster: '/media/web3.jpg',
+    services: ['ndricim'],
+    sq: { title: 'Ndriçimi publik i një bulevardi', place: 'Kosovë', client: '', text: 'Shtylla dhe ndriçues LED përgjatë gjithë bulevardit, me ndriçim të njëtrajtshëm nga njëri skaj në tjetrin, pamje nga droni natën.' },
+    en: { title: 'Public lighting along a boulevard', place: 'Kosovo', client: '', text: 'LED poles and luminaires along the full length of the boulevard, with even light from one end to the other, filmed by drone at night.' },
+  },
+  {
+    id: 'parkingu-autobuseve',
+    photos: [], video: '/media/web1.mp4', poster: '/media/web1.jpg',
+    services: ['ndricim', 'instalime'],
+    sq: { title: 'Ndriçimi i një parkingu autobusësh', place: 'Kosovë', client: '', text: 'Ndriçim i parkingut dhe i rrugëve hyrëse, pa zona të errëta mes rreshtave të autobusëve.' },
+    en: { title: 'Lighting for a bus terminal car park', place: 'Kosovo', client: '', text: 'Lighting for the car park and its access roads, with no dark spots between the bus rows.' },
+  },
 ];
 
 // Shown only in development (npm run dev) so the layout can be reviewed before real projects exist.

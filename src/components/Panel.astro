@@ -2,8 +2,8 @@
 // Services as a distribution board: a main switch plus one breaker per service.
 // Minimal styling, real-panel shapes: narrow modules, lever in a slot, I/O marks, indicator light, label strip.
 import type { Service } from '../data/content';
-interface Props { services: Service[]; all: Service; label: string; hint: string; forLabel: string; ask: string; cityLabel: string }
-const { services, all, label, hint, forLabel, ask, cityLabel } = Astro.props;
+interface Props { services: Service[]; all: Service; label: string; hint: string; forLabel: string; ask: string; cityLabel: string; media?: Record<string, { img?: string; video?: string; poster?: string; alt: string }> }
+const { services, all, label, hint, forLabel, ask, cityLabel, media = {} } = Astro.props;
 const items = [all, ...services];
 const initial = all.id; // the whole town lit, every service listed
 ---
@@ -39,7 +39,14 @@ const initial = all.id; // the whole town lit, every service listed
 
   <div class="readout" aria-live="polite">
     {items.map((s) => (
-      <div class="readout__item" role="tabpanel" id={`svc-${s.id}`} aria-labelledby={`tab-${s.id}`} hidden={s.id !== initial} tabindex="0">
+      <div class:list={['readout__item', { 'has-media': !!media[s.id] }]} role="tabpanel" id={`svc-${s.id}`} aria-labelledby={`tab-${s.id}`} hidden={s.id !== initial} tabindex="0">
+        {media[s.id] && (
+          <figure class="readout__media">
+            {media[s.id].video
+              ? <video poster={media[s.id].poster} muted loop playsinline preload="none" aria-label={media[s.id].alt} data-lazy-video><source src={media[s.id].video!.replace(/\.mp4$/, '.webm')} type="video/webm" /><source src={media[s.id].video} type="video/mp4" /></video>
+              : <img src={media[s.id].img} alt={media[s.id].alt} loading="lazy" decoding="async" width="787" height="1400" />}
+          </figure>
+        )}
         <h3 class="readout__title">{s.title}</h3>
         <p class="readout__text">{s.text}</p>
         {s.points && <ul class="readout__points">{s.points.map((x) => <li>{x}</li>)}</ul>}
