@@ -23,7 +23,7 @@ const showProjects = projList.length > 0;
 const direct = !!formService.accessKey;
 // Drone photos/clips shown inside the service readouts (preview of the media plan).
 const serviceMedia: Record<string, { img?: string; video?: string; poster?: string; alt: string }> = {
-  ndricim: { img: '/media/p0108.webp', alt: lang === 'sq' ? 'Bulevard i ndriçuar natën, pamje nga droni' : 'Lit boulevard at night, drone view' },
+  ndricim: { video: '/media/hero-v.mp4', poster: '/media/hero-v.jpg', alt: lang === 'sq' ? 'Bulevard i ndriçuar natën, pamje nga droni' : 'Lit boulevard at night, drone view' },
 };
 ---
 <Base lang={lang} intro>
