@@ -24,6 +24,7 @@ export const projects: Project[] = [
   {
     id: 'bulevardi-2026',
     photos: ['/media/p0104.webp', '/media/p0107.webp', '/media/p0092.webp', '/media/p0095.webp'],
+    video: '/media/web3.mp4', poster: '/media/web3.jpg',
     year: '[PLACEHOLDER: viti]',
     services: ['ndricim'],
     sq: { title: '[PLACEHOLDER: Ndriçimi publik i bulevardit]', place: '[PLACEHOLDER: Komuna]', client: '[PLACEHOLDER: Klienti]', text: '[PLACEHOLDER: sa shtylla / km, çfarë u bë, me 1–2 fjali.]' },
@@ -31,19 +32,11 @@ export const projects: Project[] = [
   },
   {
     id: 'parkingu-autobuseve',
-    photos: [], video: '/media/park-0080.mp4', poster: '/media/park-0080.jpg',
+    photos: [], video: '/media/web1.mp4', poster: '/media/web1.jpg',
     year: '[PLACEHOLDER: viti]',
     services: ['ndricim', 'instalime'],
     sq: { title: '[PLACEHOLDER: Ndriçimi i parkingut të autobusëve]', place: '[PLACEHOLDER: Qyteti]', client: '[PLACEHOLDER: Klienti]', text: '[PLACEHOLDER: çfarë u bë.]' },
     en: { title: '[PLACEHOLDER: Bus terminal car park lighting]', place: '[PLACEHOLDER: Town]', client: '[PLACEHOLDER: Client]', text: '[PLACEHOLDER: what was done.]' },
-  },
-  {
-    id: 'rruga-2026',
-    photos: [], video: '/media/street-0079.mp4', poster: '/media/street-0079.jpg',
-    year: '[PLACEHOLDER: viti]',
-    services: ['ndricim', 'platforme'],
-    sq: { title: '[PLACEHOLDER: Ndriçimi i rrugës]', place: '[PLACEHOLDER: Qyteti]', client: '[PLACEHOLDER: Klienti]', text: '[PLACEHOLDER: çfarë u bë.]' },
-    en: { title: '[PLACEHOLDER: Street lighting]', place: '[PLACEHOLDER: Town]', client: '[PLACEHOLDER: Client]', text: '[PLACEHOLDER: what was done.]' },
   },
   // {
   //   id: 'ndricimi-rruga-x',

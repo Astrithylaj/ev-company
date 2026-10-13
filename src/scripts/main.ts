@@ -114,17 +114,22 @@ function heroSetup() {
   const nav = navigator as Navigator & { deviceMemory?: number; connection?: { saveData?: boolean } };
   const weak = (nav.deviceMemory !== undefined && nav.deviceMemory <= 2) || (navigator.hardwareConcurrency || 8) <= 2 || !!nav.connection?.saveData;
   if (weak) { section.classList.add('no-webgl'); start(); return update; }
-  // Desktop: the real drone footage replaces the 3D street. Phones keep the lighter 3D/still.
+  // The drone film replaces the 3D street: landscape cut on wide screens, the vertical cut on phones.
   const video = section.querySelector<HTMLVideoElement>('[data-hero-video]');
-  const wantVideo = !!video && !reduced && window.matchMedia('(min-width: 900px) and (hover: hover)').matches;
-  if (wantVideo && video) {
-    video.querySelectorAll<HTMLSourceElement>('source[data-src]').forEach((s) => { s.src = s.dataset.src || ''; });
-    video.load();
+  if (video && !reduced) {
+    const portrait = window.matchMedia('(max-width: 900px) and (orientation: portrait)').matches;
+    const k = portrait ? 'p' : 'l';
+    video.poster = video.dataset[`poster${k.toUpperCase()}`] || '';
+    for (const [type, ext] of [['video/webm', 'webm'], ['video/mp4', 'mp4']]) {
+      const src = document.createElement('source'); src.type = type; src.src = video.dataset[`${k}${ext[0].toUpperCase()}${ext.slice(1)}`] || ''; video.appendChild(src);
+    }
     section.classList.add('has-video');
     const ok = () => { window.clearTimeout(fallback); start(); };
     video.addEventListener('playing', ok, { once: true });
-    video.play().catch(() => { section.classList.remove('has-video'); video.removeAttribute('src'); video.load(); boot3d(); });
-    video.addEventListener('error', () => { if (!started) { section.classList.remove('has-video'); boot3d(); } }, { once: true });
+    const giveUp = () => { if (started) return; section!.classList.remove('has-video'); video.replaceChildren(); video.removeAttribute('poster'); video.load(); boot3d(); };
+    video.addEventListener('error', giveUp, { once: true });
+    video.load();
+    video.play().catch(giveUp);
     return update;
   }
   boot3d();

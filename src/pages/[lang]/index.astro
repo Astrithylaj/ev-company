@@ -24,7 +24,6 @@ const direct = !!formService.accessKey;
 // Drone photos/clips shown inside the service readouts (preview of the media plan).
 const serviceMedia: Record<string, { img?: string; video?: string; poster?: string; alt: string }> = {
   ndricim: { img: '/media/p0108.webp', alt: lang === 'sq' ? 'Bulevard i ndriçuar natën, pamje nga droni' : 'Lit boulevard at night, drone view' },
-  platforme: { video: '/media/van-0083.mp4', poster: '/media/van-0083.jpg', alt: lang === 'sq' ? 'Auto-platforma e EV COMPANY në parking natën' : 'EV COMPANY cherry-picker van in a car park at night' },
 };
 ---
 <Base lang={lang} intro>
@@ -64,7 +63,7 @@ const serviceMedia: Record<string, { img?: string; video?: string; poster?: stri
     <!-- HERO -->
     <section class="hero" data-hero>
       <div class="hero__stage">
-        <video class="hero__video" muted loop playsinline preload="none" poster="/media/og-drone.jpg" aria-hidden="true" data-hero-video><source data-src="/media/hero-0089.webm" type="video/webm" /><source data-src="/media/hero-0089.mp4" type="video/mp4" /></video>
+        <video class="hero__video" muted loop playsinline preload="none" aria-hidden="true" data-hero-video data-poster-l="/media/hero.jpg" data-poster-p="/media/hero-v.jpg" data-l-webm="/media/hero.webm" data-l-mp4="/media/hero.mp4" data-p-webm="/media/hero-v.webm" data-p-mp4="/media/hero-v.mp4"></video>
         <canvas class="hero__canvas" role="img" aria-label={t.hero.canvasLabel} data-hero-canvas></canvas>
         <div class="hero__shade" aria-hidden="true"></div>
         <div class="hero__content wrap" data-hero-content>
