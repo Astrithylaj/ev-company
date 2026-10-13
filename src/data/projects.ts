@@ -13,7 +13,8 @@ export type Photo = { src: string; w: number; h: number };
 export type Project = {
   id: string;
   photos: (string | Photo)[]; // file names in /public/projects/ (or a full path starting with /); give w/h when known
-  video?: string;            // optional short muted clip shown as the first slide
+  video?: string;            // optional muted clip shown large next to the text
+  mosaic?: boolean;          // first 5 photos shown as a fixed mosaic: portrait, landscape, portrait, landscape, landscape; the rest open from 'see all'
   poster?: string;
   year?: string;
   services: string[];        // service ids
@@ -26,17 +27,18 @@ export const projects: Project[] = [
   // the texts only describe what the footage shows.
   {
     id: 'bulevardi-2026',
+    mosaic: true,
     photos: [
-      { src: '/media/bulevardi-01.webp', w: 1672, h: 941 },
       { src: '/media/bulevardi-02.webp', w: 941, h: 1672 },
+      { src: '/media/bulevardi-09.webp', w: 1672, h: 941 },
+      { src: '/media/bulevardi-10.webp', w: 941, h: 1672 },
+      { src: '/media/bulevardi-01.webp', w: 1672, h: 941 },
+      { src: '/media/bulevardi-07.webp', w: 1672, h: 941 },
       { src: '/media/bulevardi-03.webp', w: 1672, h: 941 },
       { src: '/media/bulevardi-04.webp', w: 941, h: 1672 },
       { src: '/media/bulevardi-05.webp', w: 1672, h: 941 },
       { src: '/media/bulevardi-06.webp', w: 941, h: 1672 },
-      { src: '/media/bulevardi-07.webp', w: 1672, h: 941 },
       { src: '/media/bulevardi-08.webp', w: 941, h: 1672 },
-      { src: '/media/bulevardi-09.webp', w: 1672, h: 941 },
-      { src: '/media/bulevardi-10.webp', w: 941, h: 1672 },
       { src: '/media/bulevardi-11.webp', w: 1672, h: 941 },
     ],
     video: '/media/web3.mp4', poster: '/media/web3.jpg',

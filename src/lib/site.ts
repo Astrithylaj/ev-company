@@ -66,8 +66,13 @@ export function renderProjects(lang: Lang, list: Project[], ids = { section: 'pr
         : '';
     // every other photo is shown in the grid under it, all visible; a tap opens it full screen
     const rest = p.video ? p.photos : p.photos.slice(1);
+    const mosaic = !!p.mosaic && rest.length >= 5;
+    const tile = (f: string | Photo, i: number) => `<li${mosaic && i >= 5 ? ' class="is-extra"' : ''} style="--r:${(photoSize(f).w / photoSize(f).h).toFixed(4)}"><a href="${esc(photoSrc(f))}" data-lightbox aria-label="${esc(`${t.projects.open}: ${x.title} (${i + 1}/${rest.length})`)}"><img src="${esc(photoSrc(f))}" alt="${esc(`${label} (${i + 1}/${rest.length})`)}" loading="lazy" decoding="async" width="${photoSize(f).w}" height="${photoSize(f).h}" /></a></li>`;
     const gallery = rest.length
-      ? `<ul class="project__gallery">${rest.map((f, i) => `<li style="--r:${(photoSize(f).w / photoSize(f).h).toFixed(4)}"><a href="${esc(photoSrc(f))}" data-lightbox aria-label="${esc(`${t.projects.open}: ${x.title} (${i + 1}/${rest.length})`)}"><img src="${esc(photoSrc(f))}" alt="${esc(`${label} (${i + 1}/${rest.length})`)}" loading="lazy" decoding="async" width="${photoSize(f).w}" height="${photoSize(f).h}" /></a></li>`).join('')}</ul>`
+      ? `<div class="project__photos">
+    <ul class="project__gallery${mosaic ? ' project__gallery--mosaic' : ''}">${rest.map(tile).join('')}</ul>
+    ${mosaic && rest.length > 5 ? `<button type="button" class="project__all" data-lightbox-all>${esc(t.projects.all)} (${rest.length})</button>` : ''}
+  </div>`
       : '';
     const meta = [x.place, p.year].filter(Boolean).map(esc).join(', ');
     return `<li class="project">

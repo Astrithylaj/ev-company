@@ -95,13 +95,17 @@ function lightbox() {
   };
   const close = () => dlg.close();
   dlg.addEventListener('close', () => { document.documentElement.classList.remove('lightbox-open'); group[i]?.focus({ preventScroll: true }); });
-  links.forEach((a) => a.addEventListener('click', (e) => {
-    e.preventDefault();
+  const open = (a: HTMLAnchorElement) => {
     group = Array.from(a.closest('.project__gallery')?.querySelectorAll<HTMLAnchorElement>('[data-lightbox]') || [a]);
     dlg.toggleAttribute('data-single', group.length < 2);
     show(group.indexOf(a));
     document.documentElement.classList.add('lightbox-open');
     dlg.showModal();
+  };
+  links.forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); open(a); }));
+  document.querySelectorAll<HTMLButtonElement>('[data-lightbox-all]').forEach((b) => b.addEventListener('click', () => {
+    const first = b.closest('.project__photos')?.querySelector<HTMLAnchorElement>('[data-lightbox]');
+    if (first) open(first);
   }));
   dlg.querySelector('.lightbox__close')!.addEventListener('click', close);
   dlg.querySelector('.lightbox__prev')!.addEventListener('click', () => show(i - 1));

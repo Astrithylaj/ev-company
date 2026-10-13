@@ -72,7 +72,7 @@ const sq = {
       ['Mirëmbajtja', 'Ofrojmë mirëmbajtje dhe intervenime për vazhdimësinë e funksionimit.'],
     ],
   },
-  projects: { title: 'Projektet tona', lead: 'Disa nga punët e realizuara.', photos: 'foto', open: 'Hap foton' },
+  projects: { title: 'Projektet tona', lead: 'Disa nga punët e realizuara.', photos: 'foto', open: 'Hap foton', all: 'Shiko të gjitha fotot' },
   company: {
     title: 'Kompania',
     p1: 'EV COMPANY sh.p.k. është ndërtuar mbi punën praktike në sektorin elektrik. Me vite kemi zgjeruar ekipin teknik dhe pajisjet, dhe sot realizojmë projekte të çdo madhësie, nga intervenimet e përditshme deri te ndriçimi publik.',
@@ -186,7 +186,7 @@ const en: typeof sq = {
       ['Maintenance', 'We provide maintenance and repairs to keep everything running.'],
     ],
   },
-  projects: { title: 'Our projects', lead: 'Some of the work we have delivered.', photos: 'photos', open: 'Open photo' },
+  projects: { title: 'Our projects', lead: 'Some of the work we have delivered.', photos: 'photos', open: 'Open photo', all: 'See all photos' },
   company: {
     title: 'The company',
     p1: 'EV COMPANY sh.p.k. is built on hands-on work in the electrical sector. Over the years we have grown our technical team and equipment, and today we deliver projects of every size, from everyday repairs to public lighting.',
