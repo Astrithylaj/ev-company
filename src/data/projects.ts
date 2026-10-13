@@ -20,32 +20,23 @@ export type Project = {
 };
 
 export const projects: Project[] = [
-  // PREVIEW ONLY — drone material from 11 Oct 2026. Titles/places/years are placeholders until Ermal confirms the facts.
+  // Drone material from October 2026. Place/client/year are left out on purpose until the client confirms them;
+  // the texts only describe what the footage shows.
   {
     id: 'bulevardi-2026',
     photos: ['/media/p0104.webp', '/media/p0107.webp', '/media/p0092.webp', '/media/p0095.webp'],
     video: '/media/web3.mp4', poster: '/media/web3.jpg',
-    year: '[PLACEHOLDER: viti]',
     services: ['ndricim'],
-    sq: { title: '[PLACEHOLDER: Ndriçimi publik i bulevardit]', place: '[PLACEHOLDER: Komuna]', client: '[PLACEHOLDER: Klienti]', text: '[PLACEHOLDER: sa shtylla / km, çfarë u bë, me 1–2 fjali.]' },
-    en: { title: '[PLACEHOLDER: Public lighting, boulevard]', place: '[PLACEHOLDER: Municipality]', client: '[PLACEHOLDER: Client]', text: '[PLACEHOLDER: how many poles / km, what was done.]' },
+    sq: { title: 'Ndriçimi publik i një bulevardi', place: 'Kosovë', client: '', text: 'Shtylla dhe ndriçues LED përgjatë gjithë bulevardit, me ndriçim të njëtrajtshëm nga njëri skaj në tjetrin, pamje nga droni natën.' },
+    en: { title: 'Public lighting along a boulevard', place: 'Kosovo', client: '', text: 'LED poles and luminaires along the full length of the boulevard, with even light from one end to the other, filmed by drone at night.' },
   },
   {
     id: 'parkingu-autobuseve',
     photos: [], video: '/media/web1.mp4', poster: '/media/web1.jpg',
-    year: '[PLACEHOLDER: viti]',
     services: ['ndricim', 'instalime'],
-    sq: { title: '[PLACEHOLDER: Ndriçimi i parkingut të autobusëve]', place: '[PLACEHOLDER: Qyteti]', client: '[PLACEHOLDER: Klienti]', text: '[PLACEHOLDER: çfarë u bë.]' },
-    en: { title: '[PLACEHOLDER: Bus terminal car park lighting]', place: '[PLACEHOLDER: Town]', client: '[PLACEHOLDER: Client]', text: '[PLACEHOLDER: what was done.]' },
+    sq: { title: 'Ndriçimi i një parkingu autobusësh', place: 'Kosovë', client: '', text: 'Ndriçim i parkingut dhe i rrugëve hyrëse, pa zona të errëta mes rreshtave të autobusëve.' },
+    en: { title: 'Lighting for a bus terminal car park', place: 'Kosovo', client: '', text: 'Lighting for the car park and its access roads, with no dark spots between the bus rows.' },
   },
-  // {
-  //   id: 'ndricimi-rruga-x',
-  //   photos: ['rruga-x-1.jpg', 'rruga-x-2.jpg'],
-  //   year: '2025',
-  //   services: ['ndricim', 'platforme'],
-  //   sq: { title: 'Ndriçimi i rrugës X', place: 'Prishtinë', client: 'Komuna e Prishtinës', text: 'Montim i 40 shtyllave LED dhe kabllimi nëntokësor.' },
-  //   en: { title: 'Street lighting, X Street', place: 'Prishtina', client: 'Municipality of Prishtina', text: 'Installed 40 LED poles and underground cabling.' },
-  // },
 ];
 
 // Shown only in development (npm run dev) so the layout can be reviewed before real projects exist.
