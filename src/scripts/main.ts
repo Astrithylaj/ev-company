@@ -177,8 +177,16 @@ function heroSetup() {
     const portrait = window.matchMedia('(max-width: 900px) and (orientation: portrait)').matches;
     const k = portrait ? 'p' : 'l';
     video.poster = video.dataset[`poster${k.toUpperCase()}`] || '';
-    for (const [type, ext] of [['video/webm', 'webm'], ['video/mp4', 'mp4']]) {
-      const src = document.createElement('source'); src.type = type; src.src = video.dataset[`${k}${ext[0].toUpperCase()}${ext.slice(1)}`] || ''; video.appendChild(src);
+    // landscape: pick the file that matches how many real pixels the hero covers (big / high-DPI screens get 1440p or 4K)
+    const d = video.dataset;
+    const conn = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
+    const slow = !!conn?.saveData || /(^|-)(2g|3g)$/.test(conn?.effectiveType || '');
+    const need = Math.max(window.innerWidth, window.innerHeight * 16 / 9) * (window.devicePixelRatio || 1);
+    const sources: [string, string][] = portrait
+      ? [['video/webm', d.pWebm || ''], ['video/mp4', d.pMp4 || '']]
+      : [['video/mp4', (!slow && need > 2700 ? d.lUhd : !slow && need > 2000 ? d.lHd : d.lSd) || '']];
+    for (const [type, url] of sources) {
+      const src = document.createElement('source'); src.type = type; src.src = url; video.appendChild(src);
     }
     section.classList.add('has-video');
     const ok = () => { window.clearTimeout(fallback); start(); };
