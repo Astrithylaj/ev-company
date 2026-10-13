@@ -57,13 +57,42 @@ function menu() {
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && document.body.classList.contains('menu-open')) { set(false); btn.focus(); } });
 }
 
+/* ---------- Autoplay helpers ----------
+   Muted clips autoplay everywhere except when the phone forbids it (iPhone Low Power Mode, some Android battery savers).
+   Then the visitor's first tap anywhere starts every clip that should be playing. */
+const blockedClips = new Set<HTMLVideoElement>();
+let unlockArmed = false;
+const UNLOCK_EVENTS = ['touchend', 'pointerup', 'click', 'keydown'];
+function unlockClips() {
+  blockedClips.forEach((v) => {
+    if (v.dataset.userPaused || !v.isConnected) { blockedClips.delete(v); return; }
+    if (v.dataset.offscreen) return;
+    v.play().then(() => blockedClips.delete(v)).catch(() => {});
+  });
+  if (![...blockedClips].some((v) => !v.dataset.offscreen)) {
+    UNLOCK_EVENTS.forEach((t) => document.removeEventListener(t, unlockClips, true));
+    unlockArmed = false;
+  }
+}
+function tryPlay(v: HTMLVideoElement): Promise<void> {
+  v.muted = true; v.defaultMuted = true; v.setAttribute('muted', ''); v.playsInline = true;
+  return v.play().catch((e: DOMException) => {
+    if (e?.name === 'NotAllowedError') {
+      blockedClips.add(v);
+      if (!unlockArmed) { unlockArmed = true; UNLOCK_EVENTS.forEach((t) => document.addEventListener(t, unlockClips, { capture: true, passive: true })); }
+    }
+    throw e;
+  });
+}
+
 /* ---------- Muted clips: play only while on screen ---------- */
 function lazyVideos() {
   const vids = document.querySelectorAll<HTMLVideoElement>('[data-lazy-video]');
   if (!vids.length) return;
   const io = new IntersectionObserver((es) => es.forEach((e) => {
     const v = e.target as HTMLVideoElement;
-    if (e.isIntersecting) { if (v.preload === 'none') v.preload = 'auto'; v.play().catch(() => {}); } else v.pause();
+    if (e.isIntersecting) { delete v.dataset.offscreen; if (v.preload === 'none') v.preload = 'auto'; tryPlay(v).catch(() => {}); }
+    else { v.dataset.offscreen = '1'; v.pause(); }
   }), { rootMargin: '120px' });
   vids.forEach((v) => io.observe(v));
 }
@@ -196,7 +225,10 @@ function heroSetup() {
       pause.classList.toggle('is-paused', video.paused);
       pause.setAttribute('aria-label', (video.paused ? pause.dataset.play : pause.dataset.pause) || '');
     };
-    pause?.addEventListener('click', () => { if (video.paused) video.play().catch(() => {}); else video.pause(); });
+    pause?.addEventListener('click', () => {
+      if (video.paused) { delete video.dataset.userPaused; video.play().catch(() => {}); }
+      else { video.dataset.userPaused = '1'; video.pause(); }
+    });
     video.addEventListener('playing', () => { window.clearTimeout(fallback); start(); sync(); });
     video.addEventListener('pause', sync);
     let failed = false;
@@ -211,8 +243,8 @@ function heroSetup() {
     };
     last?.addEventListener('error', fail);
     video.load();
-    video.play().catch((e: DOMException) => {
-      // autoplay blocked (e.g. iPhone Low Power Mode): keep the drone still on screen with a play button
+    tryPlay(video).catch((e: DOMException) => {
+      // autoplay blocked (e.g. iPhone Low Power Mode): drone still on screen with a play button; the first tap anywhere starts it
       if (e?.name === 'NotSupportedError') fail();
       else if (e?.name === 'NotAllowedError') { start(); sync(); }
     });
