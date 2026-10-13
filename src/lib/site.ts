@@ -64,7 +64,7 @@ export function renderProjects(lang: Lang, list: Project[], ids = { section: 'pr
     const meta = [x.place, p.year].filter(Boolean).map(esc).join(', ');
     return `<li class="project">
   <div class="project__photos"${n > 1 ? ` tabindex="0" aria-label="${esc(`${x.title}: ${n} ${t.projects.photos}`)}"` : ''}>${imgs}</div>
-  ${n > 1 ? `<span class="project__count" aria-hidden="true">${n} ${esc(t.projects.photos)}</span>` : ''}
+  ${n > 1 ? `<span class="project__count" aria-hidden="true">${p.video ? `Video + ${p.photos.length}` : n} ${esc(t.projects.photos)}</span>` : ''}
   <div class="project__body">
     <h3 class="project__title">${esc(x.title)}</h3>
     <p class="project__meta">${meta}${x.client ? `<span>${esc(x.client)}</span>` : ''}</p>
