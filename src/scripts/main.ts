@@ -208,7 +208,10 @@ function heroSetup() {
     // landscape: pick the file that matches how many real pixels the hero covers (big / high-DPI screens get 1440p or 4K)
     const slow = /(^|-)(2g|3g)$/.test(nav.connection?.effectiveType || '');
     const need = Math.max(window.innerWidth, window.innerHeight * 16 / 9) * (window.devicePixelRatio || 1);
-    const urls = portrait ? [d.pMp4, d.pWebm] : [!slow && need > 2700 ? d.lUhd : !slow && need > 2000 ? d.lHd : d.lSd];
+    // phones and tablets held upright: the same film, cropped from the 4K master to a tall frame (sharp, ~12 MB)
+    // small screens on their side always get the 1080p file to spare mobile data
+    const small = window.innerWidth <= 900;
+    const urls = portrait ? [d.pMp4, d.pWebm] : [!slow && !small && need > 2700 ? d.lUhd : !slow && !small && need > 2000 ? d.lHd : d.lSd];
     let last: HTMLSourceElement | null = null;
     for (const url of urls) {
       if (!url) continue;
