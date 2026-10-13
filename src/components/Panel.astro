@@ -43,7 +43,7 @@ const initial = all.id; // the whole town lit, every service listed
         {media[s.id] && (
           <figure class="readout__media">
             {media[s.id].video
-              ? <video poster={media[s.id].poster} muted loop playsinline preload="none" aria-label={media[s.id].alt} data-lazy-video><source src={media[s.id].video!.replace(/\.mp4$/, '.webm')} type="video/webm" /><source src={media[s.id].video} type="video/mp4" /></video>
+              ? <video poster={media[s.id].poster} muted loop playsinline preload="none" aria-label={media[s.id].alt} data-lazy-video><source src={media[s.id].video} type="video/mp4" /><source src={media[s.id].video!.replace(/\.mp4$/, '.webm')} type="video/webm" /></video>
               : <img src={media[s.id].img} alt={media[s.id].alt} loading="lazy" decoding="async" width="787" height="1400" />}
           </figure>
         )}

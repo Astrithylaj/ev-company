@@ -60,7 +60,7 @@ export function renderProjects(lang: Lang, list: Project[], ids = { section: 'pr
     const label = [x.title, x.place].filter(Boolean).join(', ');
     // the film: the project's video, or its first photo when there is no video
     const film = p.video
-      ? `<figure class="project__film"><video${p.poster ? ` poster="${esc(p.poster)}"` : ''} muted loop playsinline preload="none" aria-label="${esc(label)}" data-lazy-video><source src="${esc(p.video.replace(/\.mp4$/, '.webm'))}" type="video/webm" /><source src="${esc(p.video)}" type="video/mp4" /></video></figure>`
+      ? `<figure class="project__film"><video${p.poster ? ` poster="${esc(p.poster)}"` : ''} muted loop playsinline preload="none" aria-label="${esc(label)}" data-lazy-video><source src="${esc(p.video)}" type="video/mp4" /><source src="${esc(p.video.replace(/\.mp4$/, '.webm'))}" type="video/webm" /></video></figure>`
       : p.photos[0]
         ? `<figure class="project__film"><img src="${esc(photoSrc(p.photos[0]))}" alt="${esc(label)}" loading="lazy" decoding="async" width="${photoSize(p.photos[0]).w}" height="${photoSize(p.photos[0]).h}" /></figure>`
         : '';

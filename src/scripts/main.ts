@@ -166,44 +166,59 @@ function heroSetup() {
     intro.play();
   };
   const fallback = window.setTimeout(start, 2600); // text lights up even if 3D is slow or unavailable
-  // weak or data-saving devices get a still image of the lit street instead of the 3D scene
-  const nav = navigator as Navigator & { deviceMemory?: number; connection?: { saveData?: boolean } };
-  const weak = (nav.deviceMemory !== undefined && nav.deviceMemory <= 2) || (navigator.hardwareConcurrency || 8) <= 2 || !!nav.connection?.saveData;
-  if (weak) { section.classList.add('no-webgl'); start(); return update; }
-  // The drone film replaces the 3D street: landscape cut on wide screens, the vertical cut on phones.
-  // It plays for everyone (also with "reduce motion" on, e.g. Windows animation effects off); the pause button stops it.
+  // The drone film is the hero for every device (phones get the vertical cut). Only "data saver" skips it.
+  // The weak-device check below now only decides whether the 3D street may run as a fallback.
+  const nav = navigator as Navigator & { deviceMemory?: number; connection?: { saveData?: boolean; effectiveType?: string } };
+  const saveData = !!nav.connection?.saveData;
+  const weak = (nav.deviceMemory !== undefined && nav.deviceMemory <= 2) || (navigator.hardwareConcurrency || 8) <= 2 || saveData;
   const video = section.querySelector<HTMLVideoElement>('[data-hero-video]');
-  if (video) {
+  if (video && !saveData) {
     const portrait = window.matchMedia('(max-width: 900px) and (orientation: portrait)').matches;
-    const k = portrait ? 'p' : 'l';
-    video.poster = video.dataset[`poster${k.toUpperCase()}`] || '';
-    // landscape: pick the file that matches how many real pixels the hero covers (big / high-DPI screens get 1440p or 4K)
     const d = video.dataset;
-    const conn = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
-    const slow = !!conn?.saveData || /(^|-)(2g|3g)$/.test(conn?.effectiveType || '');
+    video.poster = (portrait ? d.posterP : d.posterL) || '';
+    // landscape: pick the file that matches how many real pixels the hero covers (big / high-DPI screens get 1440p or 4K)
+    const slow = /(^|-)(2g|3g)$/.test(nav.connection?.effectiveType || '');
     const need = Math.max(window.innerWidth, window.innerHeight * 16 / 9) * (window.devicePixelRatio || 1);
-    const sources: [string, string][] = portrait
-      ? [['video/webm', d.pWebm || ''], ['video/mp4', d.pMp4 || '']]
-      : [['video/mp4', (!slow && need > 2700 ? d.lUhd : !slow && need > 2000 ? d.lHd : d.lSd) || '']];
-    for (const [type, url] of sources) {
-      const src = document.createElement('source'); src.type = type; src.src = url; video.appendChild(src);
+    const urls = portrait ? [d.pMp4, d.pWebm] : [!slow && need > 2700 ? d.lUhd : !slow && need > 2000 ? d.lHd : d.lSd];
+    let last: HTMLSourceElement | null = null;
+    for (const url of urls) {
+      if (!url) continue;
+      last = document.createElement('source');
+      last.type = url.endsWith('.webm') ? 'video/webm' : 'video/mp4';
+      last.src = url;
+      video.appendChild(last);
     }
     section.classList.add('has-video');
-    const ok = () => { window.clearTimeout(fallback); start(); };
-    video.addEventListener('playing', ok, { once: true });
     const pause = section.querySelector<HTMLButtonElement>('[data-hero-pause]');
-    if (pause) {
-      const sync = () => { const paused = video.paused; pause.classList.toggle('is-paused', paused); pause.setAttribute('aria-label', (paused ? pause.dataset.play : pause.dataset.pause) || ''); };
-      video.addEventListener('playing', () => { pause.hidden = false; sync(); });
-      video.addEventListener('pause', sync);
-      pause.addEventListener('click', () => { if (video.paused) video.play().catch(() => {}); else video.pause(); });
-    }
-    const giveUp = () => { if (started) return; section!.classList.remove('has-video'); video.replaceChildren(); video.removeAttribute('poster'); video.load(); boot3d(); };
-    video.addEventListener('error', giveUp, { once: true });
+    const sync = () => {
+      if (!pause) return;
+      pause.hidden = false;
+      pause.classList.toggle('is-paused', video.paused);
+      pause.setAttribute('aria-label', (video.paused ? pause.dataset.play : pause.dataset.pause) || '');
+    };
+    pause?.addEventListener('click', () => { if (video.paused) video.play().catch(() => {}); else video.pause(); });
+    video.addEventListener('playing', () => { window.clearTimeout(fallback); start(); sync(); });
+    video.addEventListener('pause', sync);
+    let failed = false;
+    // the file really can't be played: fall back to the 3D street (or its still image on weak devices)
+    const fail = () => {
+      if (failed) return;
+      failed = true;
+      section!.classList.remove('has-video');
+      if (pause) pause.hidden = true;
+      video.replaceChildren(); video.removeAttribute('poster'); video.load();
+      if (weak) { section!.classList.add('no-webgl'); start(); } else boot3d();
+    };
+    last?.addEventListener('error', fail);
     video.load();
-    video.play().catch(giveUp);
+    video.play().catch((e: DOMException) => {
+      // autoplay blocked (e.g. iPhone Low Power Mode): keep the drone still on screen with a play button
+      if (e?.name === 'NotSupportedError') fail();
+      else if (e?.name === 'NotAllowedError') { start(); sync(); }
+    });
     return update;
   }
+  if (weak) { section.classList.add('no-webgl'); start(); return update; }
   boot3d();
   function boot3d() {
   import('./hero3d').then(({ initHero }) => {
