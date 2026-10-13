@@ -189,6 +189,18 @@ html.intro .hero .hero__line, html.intro .hero .hero__lead, html.intro .hero .he
 .hero.has-video .hero__video { display: block; }
 .hero.has-video.is-running .hero__video { opacity: 1; }
 .hero.has-video .hero__canvas { display: none; }
+.hero__pause {
+  position: absolute; right: calc(var(--pad) + 28px); bottom: 56px; z-index: 2;
+  display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+  background: rgba(0, 0, 0, 0.45); border: 1px solid rgba(255, 255, 255, 0.25); color: #fff;
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); transition: background-color 0.2s, border-color 0.2s;
+}
+.hero__pause[hidden] { display: none; }
+.hero__pause:hover { background: rgba(0, 0, 0, 0.7); border-color: var(--filament); }
+.hero__pause .hero__play-i, .hero__pause.is-paused .hero__pause-i { display: none; }
+.hero__pause.is-paused .hero__play-i { display: block; }
+html.intro .hero__pause { opacity: 0; }
+@media (max-width: 900px) { .hero__pause { bottom: 20px; right: var(--pad); } }
 .hero__shade {
   position: absolute; inset: 0; pointer-events: none;
   background:

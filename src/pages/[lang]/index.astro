@@ -81,6 +81,10 @@ const serviceMedia: Record<string, { img?: string; video?: string; poster?: stri
           <p class="hero__phone">{t.hero.phoneLead} <a href={contact.phoneHref} data-c-phone>{contact.phoneDisplay}</a></p>
         </div>
         <div class="hero__cable" aria-hidden="true"><span></span></div>
+        <button class="hero__pause" type="button" hidden aria-label={t.hero.videoPause} data-hero-pause data-pause={t.hero.videoPause} data-play={t.hero.videoPlay}>
+          <svg class="hero__pause-i" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
+          <svg class="hero__play-i" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+        </button>
       </div>
     </section>
 

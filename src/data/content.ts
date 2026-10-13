@@ -42,6 +42,8 @@ const sq = {
     phoneLead: 'Ose na telefononi:',
     secondary: 'Shihni shërbimet',
     canvasLabel: 'Animacion 3D: një rrugë natën ku dritat e ndriçimit publik ndizen njëra pas tjetrës.',
+    videoPause: 'Ndalo videon',
+    videoPlay: 'Luaj videon',
   },
   services: {
     title: 'Shërbimet',
@@ -156,6 +158,8 @@ const en: typeof sq = {
     phoneLead: 'Or call us:',
     secondary: 'See our services',
     canvasLabel: '3D animation: a street at night where the street lights switch on one after another.',
+    videoPause: 'Pause video',
+    videoPlay: 'Play video',
   },
   services: {
     title: 'Services',

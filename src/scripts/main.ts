@@ -171,8 +171,9 @@ function heroSetup() {
   const weak = (nav.deviceMemory !== undefined && nav.deviceMemory <= 2) || (navigator.hardwareConcurrency || 8) <= 2 || !!nav.connection?.saveData;
   if (weak) { section.classList.add('no-webgl'); start(); return update; }
   // The drone film replaces the 3D street: landscape cut on wide screens, the vertical cut on phones.
+  // It plays for everyone (also with "reduce motion" on, e.g. Windows animation effects off); the pause button stops it.
   const video = section.querySelector<HTMLVideoElement>('[data-hero-video]');
-  if (video && !reduced) {
+  if (video) {
     const portrait = window.matchMedia('(max-width: 900px) and (orientation: portrait)').matches;
     const k = portrait ? 'p' : 'l';
     video.poster = video.dataset[`poster${k.toUpperCase()}`] || '';
@@ -182,6 +183,13 @@ function heroSetup() {
     section.classList.add('has-video');
     const ok = () => { window.clearTimeout(fallback); start(); };
     video.addEventListener('playing', ok, { once: true });
+    const pause = section.querySelector<HTMLButtonElement>('[data-hero-pause]');
+    if (pause) {
+      const sync = () => { const paused = video.paused; pause.classList.toggle('is-paused', paused); pause.setAttribute('aria-label', (paused ? pause.dataset.play : pause.dataset.pause) || ''); };
+      video.addEventListener('playing', () => { pause.hidden = false; sync(); });
+      video.addEventListener('pause', sync);
+      pause.addEventListener('click', () => { if (video.paused) video.play().catch(() => {}); else video.pause(); });
+    }
     const giveUp = () => { if (started) return; section!.classList.remove('has-video'); video.replaceChildren(); video.removeAttribute('poster'); video.load(); boot3d(); };
     video.addEventListener('error', giveUp, { once: true });
     video.load();
